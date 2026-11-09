@@ -7,8 +7,8 @@
  * Characteristics:
  * - Fixed grid geometry: dots stay anchored (glow only, zero chaotic displacement)
  * - Compact hover radius (~55px) illuminating only the immediate cluster beneath pointer
- * - Subtle, controlled luminescence (max ~0.43 alpha in dark, ~0.33 in light)
- * - Microscopic expansion (0.9px to 1.28px max, zero giant bloom halos)
+ * - Subtle, controlled luminescence (max ~0.55 alpha in dark, ~0.45 in light)
+ * - Microscopic expansion (0.95px to 1.35px max, zero giant bloom halos)
  * - Crisp ~0.6s smooth decay for an understated, elegant feel
  * - Complete idle hibernation (0% CPU/GPU overhead when pointer is stationary)
  * ============================================================================
@@ -27,7 +27,7 @@ export class InteractiveHalftone {
 
     // Configuration parameters (Google Stitch style: subtle, compact, glow-only)
     this.spacing = 22;            // Grid dot spacing in CSS pixels
-    this.baseRadius = 0.9;        // Resting dot radius
+    this.baseRadius = 0.95;       // Resting dot radius
     this.hoverRadius = 55;        // Compact interaction radius (Google Stitch style)
     this.glowDecay = 0.88;        // Clean, quick fade (~0.6s)
 
@@ -165,8 +165,8 @@ export class InteractiveHalftone {
     const dotR = isDark ? 245 : 12;
     const dotG = isDark ? 245 : 12;
     const dotB = isDark ? 250 : 12;
-    const baseAlpha = isDark ? 0.095 : 0.085;
-    const maxGlowAlpha = isDark ? 0.43 : 0.33;
+    const baseAlpha = isDark ? 0.215 : 0.205;
+    const maxGlowAlpha = isDark ? 0.55 : 0.45;
 
     this.ctx.clearRect(0, 0, this.width, this.height);
 
@@ -198,7 +198,7 @@ export class InteractiveHalftone {
       }
 
       // 3. Render dot (Subtle, crisp, minimal expansion - NO giant halos)
-      const currentRadius = this.baseRadius + d.glow * 0.38;
+      const currentRadius = this.baseRadius + d.glow * 0.40;
       const alpha = baseAlpha + d.glow * (maxGlowAlpha - baseAlpha);
 
       this.ctx.beginPath();

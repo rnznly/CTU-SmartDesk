@@ -35,7 +35,7 @@
   --g950:                   10 10 10;
 
   /* Halftone Texture & Selection */
-  --halftone:               rgba(10, 10, 10, 0.11);
+  --halftone:               rgba(10, 10, 10, 0.23);
   --sel-bg:                 #0a0a0a;
   --sel-fg:                 #ffffff;
 
@@ -87,7 +87,7 @@ html.dark {
   --g900:                   240 240 243;
   --g950:                   250 250 250;
 
-  --halftone:               rgba(244, 244, 245, 0.11);
+  --halftone:               rgba(244, 244, 245, 0.23);
   --sel-bg:                 #fafafa;
   --sel-fg:                 #0a0a0a;
 
