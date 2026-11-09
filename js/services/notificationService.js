@@ -1,14 +1,13 @@
 /**
  * @file notificationService.js
- * @description Accessible Toast Notification & Alert Feedback Manager.
- * Satisfies Part I Requirement 7, Technical Challenge A (Error Feedback),
- * and Technical Challenge B (Validation Alerts).
+ * @description Accessible Minimalist Toast Notification & Alert Feedback Manager.
+ * Styled to Bryl Lim minimalist monochrome design specifications.
  */
 
 class NotificationService {
   constructor() {
     this.containerId = 'toast-container';
-    this.defaultDuration = 4000;
+    this.defaultDuration = 3500;
   }
 
   /**
@@ -32,33 +31,32 @@ class NotificationService {
   }
 
   /**
-   * Returns an SVG or unicode icon representing the notification type.
+   * Returns a clean monochrome SVG micro-icon representing the notification type.
    * @private
    * @param {string} type
    * @returns {string}
    */
-  _getIcon(type) {
+  _getIconSvg(type) {
     switch (type) {
       case 'success':
-        return '✓';
+        return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>';
       case 'error':
-        return '✕';
+        return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
       case 'warning':
-        return '⚠';
+        return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>';
       case 'info':
       default:
-        return 'ℹ';
+        return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>';
     }
   }
 
   /**
-   * Displays an accessible animated toast banner.
+   * Displays an accessible, sleek minimalist animated toast banner.
    * @param {string} message - Feedback message to display
    * @param {'success'|'error'|'warning'|'info'} [type='info'] - Visual type
-   * @param {number} [durationMs=4000] - Auto-dismiss timeout in milliseconds
+   * @param {number} [durationMs=3500] - Auto-dismiss timeout in milliseconds
    */
   show(message, type = 'info', durationMs = this.defaultDuration) {
-    // If run in headless test environment, log to console
     if (typeof document === 'undefined') {
       console.log(`[Notification ${type.toUpperCase()}]: ${message}`);
       return;
@@ -67,21 +65,44 @@ class NotificationService {
     const container = this._getOrCreateContainer();
     if (!container) return;
 
-    // Create toast element
+    // 1. De-duplicate similar notifications (e.g. Outage toggle spam)
+    const existingToasts = Array.from(container.querySelectorAll('.toast-item'));
+    existingToasts.forEach((t) => {
+      const msg = t.querySelector('.toast-message')?.textContent || '';
+      if (
+        (msg.includes('Outage') && message.includes('Outage')) ||
+        msg === message
+      ) {
+        this._dismissToast(t, true);
+      }
+    });
+
+    // 2. Limit maximum visible toasts to 2 to prevent screen cluttering
+    while (container.children.length >= 2) {
+      this._dismissToast(container.firstElementChild, true);
+    }
+
+    // 3. Create sleek toast element
     const toast = document.createElement('div');
     toast.className = `toast-item toast-${type}`;
     toast.setAttribute('role', type === 'error' ? 'alert' : 'status');
 
-    // Toast markup
     toast.innerHTML = `
-      <div class="toast-icon">${this._getIcon(type)}</div>
+      <div class="toast-badge toast-badge-${type}">
+        ${this._getIconSvg(type)}
+      </div>
       <div class="toast-content">
         <p class="toast-message">${message}</p>
       </div>
-      <button type="button" class="toast-close" aria-label="Dismiss notification">&times;</button>
+      <button type="button" class="toast-close" aria-label="Dismiss notification">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
     `;
 
-    // Handle manual dismiss
+    // Manual dismiss
     const closeBtn = toast.querySelector('.toast-close');
     if (closeBtn) {
       closeBtn.addEventListener('click', () => {
@@ -91,7 +112,7 @@ class NotificationService {
 
     container.appendChild(toast);
 
-    // Auto-dismiss after duration
+    // Auto-dismiss
     if (durationMs > 0) {
       setTimeout(() => {
         this._dismissToast(toast);
@@ -103,15 +124,20 @@ class NotificationService {
    * Dismisses an individual toast with exit animation.
    * @private
    * @param {HTMLElement} toast
+   * @param {boolean} [immediate=false]
    */
-  _dismissToast(toast) {
+  _dismissToast(toast, immediate = false) {
     if (!toast || !toast.parentElement) return;
+    if (immediate) {
+      toast.remove();
+      return;
+    }
     toast.classList.add('toast-exit');
     setTimeout(() => {
       if (toast.parentElement) {
-        toast.parentElement.removeChild(toast);
+        toast.remove();
       }
-    }, 250); // Matches CSS transition duration
+    }, 200);
   }
 
   /**

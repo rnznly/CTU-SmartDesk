@@ -5,7 +5,7 @@
  * cache version management, and network fallback.
  */
 
-const CACHE_NAME = 'ctu-smartdesk-v10';
+const CACHE_NAME = 'ctu-smartdesk-v11';
 
 // Pre-cached core assets for 100% offline functionality
 const PRECACHE_ASSETS = [

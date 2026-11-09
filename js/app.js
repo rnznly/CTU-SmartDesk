@@ -215,13 +215,13 @@ class App {
 
       if (shouldFail) {
         notificationService.warning(
-          'Simulated 503 HTTP Server Outage ACTIVE. Future requests will fail until disabled.',
-          5000
+          '503 Outage Active — Server requests will fail until disabled.',
+          4000
         );
       } else {
         notificationService.success(
-          'Simulated Server Outage DEACTIVATED. Normal campus operations restored.',
-          3500
+          'Server Outage Deactivated — Normal operations restored.',
+          3000
         );
       }
     });
