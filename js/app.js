@@ -69,6 +69,7 @@ class App {
 
   /**
    * Theme Switcher: bryllim.com 3-Way System / Light / Dark Manager
+   * With expanding circular wipe transition from the clicked button.
    * @private
    */
   _setupThemeSwitcher() {
@@ -78,7 +79,7 @@ class App {
 
     let currentPreference = 'system';
 
-    const applyTheme = (themeMode) => {
+    const applyTheme = (themeMode, ev = null) => {
       let isDark = false;
       if (themeMode === 'system') {
         isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -86,26 +87,66 @@ class App {
         isDark = themeMode === 'dark';
       }
 
-      document.documentElement.classList.toggle('dark', isDark);
+      const currentlyDark = document.documentElement.classList.contains('dark');
+      const needsVisualFlip = currentlyDark !== isDark;
 
-      if (systemBtn) systemBtn.classList.toggle('is-active', themeMode === 'system');
-      if (lightBtn) lightBtn.classList.toggle('is-active', themeMode === 'light');
-      if (darkBtn) darkBtn.classList.toggle('is-active', themeMode === 'dark');
+      const setDomClasses = () => {
+        document.documentElement.classList.toggle('dark', isDark);
 
-      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-      if (metaThemeColor) {
-        metaThemeColor.setAttribute('content', isDark ? '#0c0c0f' : '#ffffff');
-      }
+        if (systemBtn) systemBtn.classList.toggle('is-active', themeMode === 'system');
+        if (lightBtn) lightBtn.classList.toggle('is-active', themeMode === 'light');
+        if (darkBtn) darkBtn.classList.toggle('is-active', themeMode === 'dark');
 
-      if (this.halftone) {
-        this.halftone.onThemeChange();
-      }
-
-      try {
-        if (typeof localStorage !== 'undefined') {
-          localStorage.setItem('smartdesk_theme', themeMode);
+        const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+        if (metaThemeColor) {
+          metaThemeColor.setAttribute('content', isDark ? '#0c0c0f' : '#ffffff');
         }
-      } catch {}
+
+        if (this.halftone) {
+          this.halftone.onThemeChange();
+        }
+
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem('smartdesk_theme', themeMode);
+          }
+        } catch {}
+      };
+
+      // Fallback: If no color flip needed or View Transitions unsupported/reduced motion
+      const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!needsVisualFlip || !ev || !document.startViewTransition || prefersReducedMotion) {
+        setDomClasses();
+        return;
+      }
+
+      // Circular expanding wipe from the clicked button center
+      const rect = ev.currentTarget ? ev.currentTarget.getBoundingClientRect() : null;
+      const x = rect ? rect.left + rect.width / 2 : (ev.clientX || window.innerWidth / 2);
+      const y = rect ? rect.top + rect.height / 2 : (ev.clientY || window.innerHeight / 2);
+      const r = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
+
+      const transition = document.startViewTransition(() => {
+        setDomClasses();
+      });
+
+      transition.ready.then(() => {
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${x}px ${y}px)`,
+              `circle(${r}px at ${x}px ${y}px)`
+            ]
+          },
+          {
+            duration: 520,
+            easing: 'cubic-bezier(0.32, 0.08, 0.24, 1)',
+            pseudoElement: '::view-transition-new(root)'
+          }
+        );
+      }).catch(() => {
+        setDomClasses();
+      });
     };
 
     // Load saved preference
@@ -120,9 +161,9 @@ class App {
 
     applyTheme(currentPreference);
 
-    if (systemBtn) systemBtn.addEventListener('click', () => { currentPreference = 'system'; applyTheme('system'); });
-    if (lightBtn) lightBtn.addEventListener('click', () => { currentPreference = 'light'; applyTheme('light'); });
-    if (darkBtn) darkBtn.addEventListener('click', () => { currentPreference = 'dark'; applyTheme('dark'); });
+    if (systemBtn) systemBtn.addEventListener('click', (e) => { currentPreference = 'system'; applyTheme('system', e); });
+    if (lightBtn) lightBtn.addEventListener('click', (e) => { currentPreference = 'light'; applyTheme('light', e); });
+    if (darkBtn) darkBtn.addEventListener('click', (e) => { currentPreference = 'dark'; applyTheme('dark', e); });
 
     // Listen to OS theme changes when in system mode
     if (window.matchMedia) {

@@ -299,8 +299,9 @@ class SoundService {
         // Card action buttons: Start in progress, Mark as resolved, Re-open (Pending) (.btn-status-action)
         const isNavFilterBtn = target.closest('#filter-container button, .filter-bar-row button');
         const isStatusActionBtn = target.closest('.btn-status-action');
+        const isThemeOptBtn = target.closest('.theme-opt');
 
-        if (isNavFilterBtn || isStatusActionBtn) {
+        if (isNavFilterBtn || isStatusActionBtn || isThemeOptBtn) {
           this.playClickPen();
           return;
         }

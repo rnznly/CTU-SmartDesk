@@ -572,3 +572,21 @@ html.dark .outage-toggle-wrapper.active input[type="checkbox"] {
 ::-webkit-scrollbar-thumb:hover {
   background: rgb(var(--g400));
 }
+
+
+/* ==========================================================================
+   Circular View Transition for Theme Switch (bryllim.com expanding circle)
+   ========================================================================== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
