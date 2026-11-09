@@ -333,7 +333,7 @@ Auditory cues provide instant tactile confirmation for keyboard and mouse intera
 â”‚ User Action                     â”‚ Audio Feedback Asset               â”‚
 â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
 â”‚ Submit Ticket / Sound Toggle    â”‚ Apple Pay Confirmation Chime       â”‚
-â”‚ Auto-Fill Sample Ticket Click   â”‚ Scribblenauts Key Press            â”‚
+│ Auto-Fill Sample / Copy ID Click │ Scribblenauts Key Press            │
 â”‚ 503 Server Outage Toggle        â”‚ Nintendo Switch Notification Sound â”‚
 â”‚ Dropdown Trigger / Filter Click â”‚ Retractable Ballpoint Pen Click    â”‚
 â”‚ Card Hover / Choice Hover       â”‚ Mechanical Typewriter Tick         â”‚

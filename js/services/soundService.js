@@ -11,6 +11,7 @@
  *    - Hover on nav buttons (#filter-container button: All, Pending, In Progress, Resolved)
  * 3. Scribblenauts Key Press Sound (scribblenauts.mp3):
  *    - Click #btn-sample-fill (Auto-fill sample ticket)
+ *    - Click copy ID button (.btn-copy-id, [data-action="copy"])
  * 4. Switch Notification Sound (switch_notification.mp3):
  *    - Click #toggle-server-failure / #outage-wrapper (Simulate 503 Outage switch)
  * 5. Click Pen Sound (click_pen.mp3):
@@ -18,7 +19,7 @@
  *    - Click status action buttons (Start in progress, Mark as resolved, Re-open (Pending))
  *    - Click theme mode option buttons (.theme-opt)
  * 6. Minecraft Click Sound (minecraft_click.mp3):
- *    - Click any other buttons/controls (copy ID, clear search, reset filters)
+ *    - Click any other buttons/controls (clear search, reset filters)
  * ============================================================================
  */
 
@@ -317,6 +318,12 @@ class SoundService {
           return;
         }
 
+        // Case B2: Copy Request ID Button -> Scribblenauts Sound
+        if (target.closest('.btn-copy-id, [data-action="copy"]')) {
+          this.playScribblenauts();
+          return;
+        }
+
         // Case C: Simulate 503 Outage Toggle Switch -> Nintendo Switch Click
         if (target.closest('#toggle-server-failure, #outage-wrapper, .outage-toggle-wrapper')) {
           const now = performance.now();
@@ -340,12 +347,11 @@ class SoundService {
           return;
         }
 
-        // Case C: Minecraft Click -> Any other clickable buttons/controls
+        // Case E: Minecraft Click -> Any other clickable buttons/controls (clear search, reset filters)
         const generalClickable = target.closest([
           'button',
           'a[href]',
           '.theme-opt',
-          '.btn-copy-id',
           '.btn-clear-search',
           '#btn-reset-filters',
           'input[type="submit"]',
