@@ -38,7 +38,7 @@ try {
   fs.mkdirSync(stagingDir, { recursive: true });
 
   // Files/Directories to copy
-  const rootFiles = ['index.html', 'favicon.ico', 'manifest.json', 'service-worker.js', 'README.md'];
+  const rootFiles = ['index.html', 'favicon.ico', 'manifest.json', 'service-worker.js', 'README.md', 'LICENSE'];
   for (const file of rootFiles) {
     const src = path.join(projectRoot, file);
     if (fs.existsSync(src)) {

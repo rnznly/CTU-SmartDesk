@@ -6,6 +6,7 @@
   <img src="https://img.shields.io/badge/Nginx-Alpine-009639?style=for-the-badge&logo=nginx&logoColor=white" alt="Nginx" />
   <img src="https://img.shields.io/badge/Architecture-3--Tier%20Loose%20Coupling-5e6ad2?style=for-the-badge" alt="Architecture" />
   <img src="https://img.shields.io/badge/Test%20Suite-100%25%20Passed-27a644?style=for-the-badge" alt="Tests" />
+  <img src="https://img.shields.io/badge/License-MIT%20Custom-blue?style=for-the-badge" alt="License" />
   <img src="https://img.shields.io/badge/Institution-Cebu%20Technological%20University-7B1113?style=for-the-badge" alt="CTU" />
 </p>
 
@@ -117,6 +118,7 @@ npx serve .
 ├── service-worker.js            # Service Worker (Cache-First asset caching)
 ├── docker-compose.yml           # Docker orchestration configuration
 ├── Dockerfile                   # Nginx Alpine container definition
+├── LICENSE                      # MIT License with Design & Brand Reservation Clause
 ├── README.md                    # System documentation
 │
 ├── css/
@@ -199,3 +201,14 @@ node scripts/test_challenge_c.js
 * **Zero Ghost Records on Outage:** When server outage mode is toggled (HTTP 503), the data layer rejects requests before touching storage, preventing orphaned entries while preserving student input.
 * **Deterministic ID Collision Resistance:** The generator combines `YYYYMMDD` with a 4-hex random salt and millisecond timestamp salt, ensuring identical issue descriptions filed simultaneously never collide.
 * **Sanitization:** Input values are trimmed and sanitized before validation and rendering to protect against layout corruption and script injection.
+
+---
+
+## 📄 License
+
+This project is licensed under the terms of the **MIT License with Design & Brand Reservation**.
+
+* **What is permitted:** You are free to study, reference, fork, and replicate the architectural ideas, 3-Tier design patterns, offline PWA implementation, and business logic for educational, academic, or personal development.
+* **What is reserved:** You may **not** duplicate or clone the official institutional branding, emblems, seals of Cebu Technological University (CTU), or the exact proprietary visual theme flow and color palettes of the author for unauthorized public representation.
+
+See the full [LICENSE](LICENSE) file for complete legal terms.

@@ -1,0 +1,45 @@
+MIT License with Design & Brand Reservation
+
+Copyright (c) 2026 Laurence Glenn Parojinog
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+--------------------------------------------------------------------------------
+TRADEMARK, INSTITUTIONAL BRANDING & DESIGN RESERVATION CLAUSE
+--------------------------------------------------------------------------------
+1. Institutional & Brand Identity:
+   The permissions granted above apply strictly to the underlying source code, 
+   system architecture, and algorithmic logic. This license does NOT grant 
+   permission to use the trade names, trademarks, official university seals, 
+   logos, or emblems of Cebu Technological University (CTU) or the author.
+
+2. Visual Design & Theme Flow:
+   Any derivative works, forks, or redistributions must NOT duplicate or clone 
+   the exact visual branding, custom color palettes (e.g., CTU Maroon accents 
+   paired with the proprietary obsidian dark motif), typography lockups, 
+   or the original UX aesthetic flow of this system in a manner that creates 
+   brand confusion or misrepresents authorship.
+
+3. Idea & Architecture Replication:
+   Developers and students are explicitly permitted to reference, study, adapt, 
+   and replicate the underlying concepts, 3-Tier architecture, PWA caching 
+   strategies, and business logic for educational, academic, or personal projects, 
+   provided original attribution is retained and distinct visual branding is used.
+
+--------------------------------------------------------------------------------
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
