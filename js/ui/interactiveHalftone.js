@@ -1,13 +1,13 @@
 /**
  * ============================================================================
- * GOOGLE STITCH INTERACTIVE CANVAS ENGINE (stitch.google.com)
+ * GOOGLE STITCH HOME INTERACTIVE BACKGROUND (stitch.google.com/home)
  * ============================================================================
- * AI-native infinite workspace canvas inspired by Google Stitch:
- * - 24px Engineering Blueprint Dot Matrix (perfect 8pt spatial grid rhythm)
- * - Signature Google Stitch Ambient Mouse Spotlight (lavender-indigo #5e6ad2 glow)
- * - Smooth Fluid Lerp Cursor Tracking (magnetic, silky spotlight motion)
- * - Dynamic Proximity Luminance (dots illuminate pearlescent under cursor)
- * - Complete Idle Hibernation (0% CPU/GPU overhead when pointer is resting)
+ * Faithful recreation of the Google Stitch Home landing page background:
+ * 1. Organic Undulating Wave — continuous mathematical wave (sin/cos motion)
+ * 2. Physical Pointer Ripple — dots organically push away from cursor with elastic rebound
+ * 3. Reactive Luminescence — dots scale up and illuminate with Stitch violet/lavender hue (#a78bfa)
+ * 4. Smooth Spring Physics — position damping (0.12 lerp) for lifelike fluid motion
+ * 5. Lifecycle Management — pauses on tab switch (Page Visibility API) for 0% idle drain
  * ============================================================================
  */
 
@@ -22,21 +22,22 @@ export class InteractiveHalftone {
     this.ctx = this.canvas.getContext('2d', { alpha: true });
     this.dots = [];
 
-    // Configuration parameters (Google Stitch canvas specification)
-    this.spacing = 24;            // 24px coordinate grid (3 * 8pt grid system)
-    this.baseRadius = 0.95;       // Resting dot radius (crisp 1.9px diameter)
-    this.spotlightRadius = 420;   // Generous atmospheric spotlight radius
-    this.maxDotExpansion = 0.40;  // Subtle expansion under direct light
+    // Configuration parameters (Google Stitch Home specification)
+    this.spacing = 30;            // Grid spacing for dots
+    this.dotRadiusBase = 1.35;    // Base resting radius (clean, distinct circular points)
+    this.mouseRadius = 160;       // Interaction/ripple radius (Google Stitch Home ~150-160px)
 
-    // Cursor coordinates with fluid Lerp interpolation
-    this.targetPointer = { x: -9999, y: -9999, active: false };
-    this.pointer = { x: -9999, y: -9999, active: false };
-    this.spotlightAlpha = 0;
+    // Mouse tracking state
+    this.mouse = {
+      x: null,
+      y: null,
+      active: false
+    };
 
-    // Engine loop management
+    // Animation & physics state
+    this.time = 0;
     this.isSleeping = false;
     this.rafId = null;
-    this.idleTimer = null;
 
     this._init();
   }
@@ -58,7 +59,7 @@ export class InteractiveHalftone {
   }
 
   /**
-   * Recalculates canvas dimensions and particle coordinates.
+   * Recalculates canvas dimensions and particle grid.
    * @private
    */
   _resize() {
@@ -70,17 +71,22 @@ export class InteractiveHalftone {
     this.canvas.height = Math.floor(this.height * dpr);
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const cols = Math.ceil(this.width / this.spacing) + 1;
-    const rows = Math.ceil(this.height / this.spacing) + 1;
+    const cols = Math.ceil(this.width / this.spacing) + 2;
+    const rows = Math.ceil(this.height / this.spacing) + 2;
     const startX = (this.width % this.spacing) / 2;
     const startY = (this.height % this.spacing) / 2;
 
     this.dots = [];
     for (let c = 0; c < cols; c++) {
       for (let r = 0; r < rows; r++) {
+        const ox = startX + (c - 0.5) * this.spacing;
+        const oy = startY + (r - 0.5) * this.spacing;
         this.dots.push({
-          baseX: startX + c * this.spacing,
-          baseY: startY + r * this.spacing
+          originX: ox,
+          originY: oy,
+          x: ox,
+          y: oy,
+          baseAlpha: 0.22 + (Math.sin(c * 0.5) * Math.cos(r * 0.5) + 1) * 0.08
         });
       }
     }
@@ -89,7 +95,7 @@ export class InteractiveHalftone {
   }
 
   /**
-   * Bind resize and pointer tracking listeners.
+   * Bind resize, pointer tracking, and visibility listeners.
    * @private
    */
   _bindEvents() {
@@ -106,16 +112,9 @@ export class InteractiveHalftone {
     window.addEventListener(
       'pointermove',
       (e) => {
-        this.targetPointer.x = e.clientX;
-        this.targetPointer.y = e.clientY;
-        this.targetPointer.active = true;
-
-        // If pointer was completely off-screen, snap initial coordinates
-        if (this.pointer.x === -9999) {
-          this.pointer.x = e.clientX;
-          this.pointer.y = e.clientY;
-        }
-
+        this.mouse.x = e.clientX;
+        this.mouse.y = e.clientY;
+        this.mouse.active = true;
         this._wake();
       },
       { passive: true }
@@ -124,15 +123,30 @@ export class InteractiveHalftone {
     window.addEventListener(
       'pointerleave',
       () => {
-        this.targetPointer.active = false;
-        this._wake();
+        this.mouse.active = false;
+        this.mouse.x = null;
+        this.mouse.y = null;
       },
       { passive: true }
     );
+
+    // Save battery when tab is hidden
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.isSleeping = true;
+        if (this.rafId) {
+          cancelAnimationFrame(this.rafId);
+          this.rafId = null;
+        }
+      } else {
+        this.isSleeping = false;
+        this._wake();
+      }
+    });
   }
 
   /**
-   * Force theme refresh when light/dark mode toggles.
+   * Force refresh when light/dark theme toggles.
    */
   onThemeChange() {
     this._wake();
@@ -145,155 +159,99 @@ export class InteractiveHalftone {
   _wake() {
     if (this.isSleeping) {
       this.isSleeping = false;
-      this._tick();
-    } else if (!this.rafId) {
+    }
+    if (!this.rafId) {
       this._tick();
     }
   }
 
   /**
-   * Core simulation and render step.
+   * Core simulation and render step (Google Stitch Home physics & wave).
    * @private
    */
   _tick() {
     if (this.isSleeping) return;
 
-    const isDark = document.documentElement.classList.contains('dark');
-
-    // 1. Fluid Lerp Tracking for spotlight coordinates
-    let motionDelta = 0;
-    if (this.targetPointer.active) {
-      const dx = this.targetPointer.x - this.pointer.x;
-      const dy = this.targetPointer.y - this.pointer.y;
-      this.pointer.x += dx * 0.20;
-      this.pointer.y += dy * 0.20;
-      motionDelta = Math.abs(dx) + Math.abs(dy);
-
-      // Smooth spotlight fade-in
-      this.spotlightAlpha += (1 - this.spotlightAlpha) * 0.12;
-      this.pointer.active = true;
-    } else {
-      // Smooth spotlight fade-out
-      this.spotlightAlpha *= 0.90;
-      if (this.spotlightAlpha < 0.005) {
-        this.spotlightAlpha = 0;
-        this.pointer.active = false;
-        this.pointer.x = -9999;
-        this.pointer.y = -9999;
-      }
-    }
-
-    const px = this.pointer.x;
-    const py = this.pointer.y;
-    const sRadius = this.spotlightRadius;
-    const sRadiusSq = sRadius * sRadius;
-
-    // Palette tokens
-    // Base dot alpha: clean, quiet, technical
-    const baseAlpha = isDark ? 0.12 : 0.09;
-    const dotR = isDark ? 235 : 20;
-    const dotG = isDark ? 238 : 25;
-    const dotB = isDark ? 250 : 35;
-
-    // Clear canvas
+    this.time += 0.024;
     this.ctx.clearRect(0, 0, this.width, this.height);
 
-    // 2. Render Google Stitch Atmospheric Ambient Spotlight
-    if (this.pointer.active && this.spotlightAlpha > 0.005) {
-      const glowGrad = this.ctx.createRadialGradient(px, py, 0, px, py, sRadius);
-      const intensity = this.spotlightAlpha;
+    const isDark = document.documentElement.classList.contains('dark');
+    const mx = this.mouse.x;
+    const my = this.mouse.y;
+    const hasMouse = this.mouse.active && mx !== null && my !== null;
+    const radius = this.mouseRadius;
+    const radiusSq = radius * radius;
 
-      if (isDark) {
-        // Signature Stitch lavender-indigo #5e6ad2 ambient spotlight
-        glowGrad.addColorStop(0, `rgba(94, 106, 210, ${(0.13 * intensity).toFixed(3)})`);
-        glowGrad.addColorStop(0.35, `rgba(94, 106, 210, ${(0.05 * intensity).toFixed(3)})`);
-        glowGrad.addColorStop(0.70, `rgba(94, 106, 210, ${(0.015 * intensity).toFixed(3)})`);
-        glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      } else {
-        glowGrad.addColorStop(0, `rgba(94, 106, 210, ${(0.07 * intensity).toFixed(3)})`);
-        glowGrad.addColorStop(0.35, `rgba(94, 106, 210, ${(0.025 * intensity).toFixed(3)})`);
-        glowGrad.addColorStop(0.70, `rgba(94, 106, 210, ${(0.008 * intensity).toFixed(3)})`);
-        glowGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      }
+    for (let i = 0; i < this.dots.length; i++) {
+      const dot = this.dots[i];
 
-      this.ctx.fillStyle = glowGrad;
-      this.ctx.fillRect(0, 0, this.width, this.height);
-    }
+      // 1. Organic wave calculation (sine/cosine spatial wave)
+      const waveX = Math.sin(this.time + dot.originY * 0.012) * 4.5;
+      const waveY = Math.cos(this.time + dot.originX * 0.012) * 4.5;
 
-    // 3. Render Dot Grid Matrix
-    const activeSpotlight = this.pointer.active && this.spotlightAlpha > 0.005;
+      let targetX = dot.originX + waveX;
+      let targetY = dot.originY + waveY;
+      let proximityForce = 0;
 
-    if (!activeSpotlight) {
-      // Unified batch pass for resting grid (near-instant 0.1ms render)
-      this.ctx.beginPath();
-      for (let i = 0; i < this.dots.length; i++) {
-        const d = this.dots[i];
-        this.ctx.moveTo(d.baseX + this.baseRadius, d.baseY);
-        this.ctx.arc(d.baseX, d.baseY, this.baseRadius, 0, Math.PI * 2);
-      }
-      this.ctx.fillStyle = `rgba(${dotR}, ${dotG}, ${dotB}, ${baseAlpha.toFixed(3)})`;
-      this.ctx.fill();
-    } else {
-      // Split into resting dots and spotlight-illuminated dots
-      this.ctx.beginPath();
-      const illuminatedDots = [];
-
-      for (let i = 0; i < this.dots.length; i++) {
-        const d = this.dots[i];
-        const dx = d.baseX - px;
-        const dy = d.baseY - py;
+      // 2. Mouse ripple & organic repulsion (Google Stitch signature interaction)
+      if (hasMouse) {
+        const dx = mx - dot.originX;
+        const dy = my - dot.originY;
         const distSq = dx * dx + dy * dy;
 
-        if (distSq < sRadiusSq) {
+        if (distSq < radiusSq) {
           const dist = Math.sqrt(distSq);
-          const ratio = 1 - dist / sRadius;
-          const curve = ratio * ratio; // smooth bell curve falloff
-          illuminatedDots.push({
-            x: d.baseX,
-            y: d.baseY,
-            ratio: curve
-          });
-        } else {
-          this.ctx.moveTo(d.baseX + this.baseRadius, d.baseY);
-          this.ctx.arc(d.baseX, d.baseY, this.baseRadius, 0, Math.PI * 2);
+          const force = 1 - dist / radius;
+          proximityForce = force * force; // Quadratic bell curve for smooth indentation
+
+          const angle = Math.atan2(dy, dx);
+          // Gently push dots away to form an organic interactive ripple indentation
+          targetX -= Math.cos(angle) * force * 28;
+          targetY -= Math.sin(angle) * force * 28;
         }
       }
 
-      // Draw resting outer dots
-      this.ctx.fillStyle = `rgba(${dotR}, ${dotG}, ${dotB}, ${baseAlpha.toFixed(3)})`;
+      // 3. Smooth spring damping towards target position (0.12 lerp)
+      dot.x += (targetX - dot.x) * 0.12;
+      dot.y += (targetY - dot.y) * 0.12;
+
+      // 4. Dot size & luminescence
+      const dotSize = this.dotRadiusBase + proximityForce * 1.5;
+      const waveShimmer = Math.sin(this.time * 1.4 + dot.originX * 0.018) * 0.08;
+      const alpha = Math.min(
+        1,
+        Math.max(
+          0.12,
+          dot.baseAlpha + waveShimmer + proximityForce * 0.55
+        )
+      );
+
+      // 5. Render dot in Google Stitch signature violet/lavender (#a78bfa)
+      this.ctx.beginPath();
+      this.ctx.arc(dot.x, dot.y, dotSize, 0, Math.PI * 2);
+
+      if (isDark) {
+        if (proximityForce > 0.08) {
+          // Pearlescent illuminated lavender under cursor
+          this.ctx.fillStyle = `rgba(196, 181, 253, ${alpha.toFixed(3)})`;
+        } else {
+          // Ambient Stitch violet dot
+          this.ctx.fillStyle = `rgba(167, 139, 250, ${alpha.toFixed(3)})`;
+        }
+      } else {
+        if (proximityForce > 0.08) {
+          // Indigo highlight under cursor
+          this.ctx.fillStyle = `rgba(99, 102, 241, ${alpha.toFixed(3)})`;
+        } else {
+          // Ambient slate-purple dot
+          this.ctx.fillStyle = `rgba(139, 92, 246, ${alpha.toFixed(3)})`;
+        }
+      }
+
       this.ctx.fill();
-
-      // Draw spotlight-illuminated dots with Google Stitch pearlescent glow
-      for (let i = 0; i < illuminatedDots.length; i++) {
-        const d = illuminatedDots[i];
-        const illumination = d.ratio * this.spotlightAlpha;
-        const currentRadius = this.baseRadius + illumination * this.maxDotExpansion;
-        const currentAlpha = baseAlpha + illumination * (isDark ? 0.36 : 0.28);
-
-        this.ctx.beginPath();
-        this.ctx.arc(d.x, d.y, currentRadius, 0, Math.PI * 2);
-
-        if (isDark) {
-          // Pearlescent lavender-tinted white under spotlight
-          this.ctx.fillStyle = `rgba(240, 242, 255, ${currentAlpha.toFixed(3)})`;
-        } else {
-          this.ctx.fillStyle = `rgba(30, 41, 59, ${currentAlpha.toFixed(3)})`;
-        }
-        this.ctx.fill();
-      }
     }
 
-    // 4. Smart Idle Hibernation
-    // If pointer is off-screen or motionless and alpha settled, enter low-power sleep
-    const isSettled = !this.targetPointer.active && this.spotlightAlpha === 0;
-    const isMotionless = this.targetPointer.active && motionDelta < 0.2 && Math.abs(1 - this.spotlightAlpha) < 0.01;
-
-    if (isSettled) {
-      this.isSleeping = true;
-      this.rafId = null;
-    } else {
-      this.rafId = requestAnimationFrame(() => this._tick());
-    }
+    this.rafId = requestAnimationFrame(() => this._tick());
   }
 
   /**
