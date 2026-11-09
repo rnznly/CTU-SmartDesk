@@ -22,3 +22,4 @@ yarn-debug.log*
 *.zip
 *.tar.gz
 *.mp4
+*.pdf
