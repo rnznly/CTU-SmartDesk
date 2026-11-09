@@ -12,7 +12,7 @@
  *    - Hover on dropdown choices (.custom-select-option)
  * 3. Scribblenauts Key Press Sound (scribblenauts.mp3):
  *    - Click #btn-sample-fill (Auto-fill sample ticket)
- * 4. Nintendo Switch Click Sound (nintendo_switch.mp3):
+ * 4. Switch Notification Sound (switch_notification.mp3):
  *    - Click #toggle-server-failure / #outage-wrapper (Simulate 503 Outage switch)
  * 5. Click Pen Sound (click_pen.mp3):
  *    - Click nav filter buttons (All, Pending, In Progress, Resolved)
@@ -40,7 +40,7 @@ class SoundService {
       clickPen: null,
       minecraftClick: null,
       scribblenauts: null,
-      nintendoSwitch: null
+      outageSwitch: null
     };
 
     this.soundPaths = {
@@ -48,7 +48,7 @@ class SoundService {
       clickPen: './assets/sounds/click_pen.mp3',
       minecraftClick: './assets/sounds/minecraft_click.mp3',
       scribblenauts: './assets/sounds/scribblenauts.mp3',
-      nintendoSwitch: './assets/sounds/nintendo_switch.mp3'
+      outageSwitch: './assets/sounds/switch_notification.mp3'
     };
   }
 
@@ -339,7 +339,7 @@ class SoundService {
           const now = performance.now();
           if (now - this.lastOutageSoundTime >= 200) {
             this.lastOutageSoundTime = now;
-            this.playNintendoSwitch();
+            this.playOutageSwitch();
           }
           return;
         }
@@ -397,10 +397,14 @@ class SoundService {
   }
 
   /**
-   * Plays the Nintendo Switch click sound on 503 outage toggle.
+   * Plays the Switch Notification sound on 503 outage toggle.
    */
+  playOutageSwitch() {
+    this._playAudio('outageSwitch', 0.6);
+  }
+
   playNintendoSwitch() {
-    this._playAudio('nintendoSwitch', 0.6);
+    this.playOutageSwitch();
   }
 
   /**
