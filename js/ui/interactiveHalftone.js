@@ -22,13 +22,13 @@ export class InteractiveHalftone {
     this.ctx = this.canvas.getContext('2d', { alpha: true });
     this.dots = [];
 
-    // Configuration parameters (Google Stitch Home specification - 50% scale grid, +25% reactivity)
+    // Configuration parameters (Google Stitch Home specification - 50% scale grid, +56% cumulative reactivity)
     this.spacing = 15;            // Grid spacing for dots (50% scale)
     this.dotRadiusBase = 0.75;    // Base resting radius (crisp 1.5px diameter)
-    this.mouseRadius = 138;       // Interaction/ripple radius (+25% reactivity scale from 110px)
-    this.repulsionStrength = 17.5;// Physical pointer repulsion amplitude (+25% from 14px)
-    this.reactiveGrowth = 0.94;   // Dynamic dot expansion under cursor (+25% from 0.75px)
-    this.reactiveLuminescence = 0.69; // Alpha proximity boost (+25% from 0.55)
+    this.mouseRadius = 173;       // Interaction/ripple radius (+25% scale from 138px)
+    this.repulsionStrength = 21.9;// Physical pointer repulsion amplitude (+25% scale from 17.5px)
+    this.reactiveGrowth = 1.18;   // Dynamic dot expansion under cursor (+25% scale from 0.94px)
+    this.reactiveLuminescence = 0.86; // Alpha proximity boost (+25% scale from 0.69)
 
     // Mouse tracking state
     this.mouse = {

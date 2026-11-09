@@ -196,7 +196,7 @@ components:
     spacing: "{spacing.grid}"
     baseDotColor: "{colors.halftone-dot}"
     illuminatedDotColor: "{colors.halftone-glow}"
-    mouseRepulsionRadius: 138
+    mouseRepulsionRadius: 173
     waveSpeed: 0.024
 ---
 
@@ -278,8 +278,8 @@ A secondary wave shimmer modulates baseline luminescence:
 $$\alpha_{\text{shimmer}} = \sin(\text{time} \times 1.4 + \text{originX} \times 0.018) \times 0.08$$
 
 ### 3.2 Elastic Cursor Repulsion & Ripple Indentation
-When the pointer enters the viewport, dots within a **138px interaction radius** (+25% reactivity scale) are dynamically pushed away along their angle of incidence, mimicking a finger depressing an elastic rubber membrane:
-$$\Delta X = -\cos(\theta) \times \text{force} \times 17.5\text{px},\quad \Delta Y = -\sin(\theta) \times \text{force} \times 17.5\text{px}$$
+When the pointer enters the viewport, dots within a **173px interaction radius** (+25% reactivity scale) are dynamically pushed away along their angle of incidence, mimicking a finger depressing an elastic rubber membrane:
+$$\Delta X = -\cos(\theta) \times \text{force} \times 21.9\text{px},\quad \Delta Y = -\sin(\theta) \times \text{force} \times 21.9\text{px}$$
 $$\text{where } \text{force} = 1 - \frac{\text{distance}}{\text{radius}}$$
 
 ### 3.3 Spring Damping & Return Physics
@@ -289,7 +289,7 @@ $$\text{dot.y} \mathrel{+}= (\text{targetY} - \text{dot.y}) \times 0.12$$
 
 ### 3.4 Dynamic Proximity Luminance
 - **Resting Dot:** $0.75\text{px}$ radius, $\alpha = 0.22 \sim 0.30$, rendered in Stitch Violet (`rgba(167, 139, 250, alpha)`).
-- **Peak Cursor Indentation:** Dynamically expands up to $1.69\text{px}$ radius ($0.75\text{px} + 0.94\text{px}$ growth), $\alpha \rightarrow 0.85 \sim 1.0$, shifting into pearlescent illuminated lavender (`rgba(196, 181, 253, alpha)`).
+- **Peak Cursor Indentation:** Dynamically expands up to $1.93\text{px}$ radius ($0.75\text{px} + 1.18\text{px}$ growth), $\alpha \rightarrow 0.85 \sim 1.0$, shifting into pearlescent illuminated lavender (`rgba(196, 181, 253, alpha)`).
 
 ---
 
