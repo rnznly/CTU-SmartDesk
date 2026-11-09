@@ -63,8 +63,7 @@ const requiredFiles = [
   'docs/api-contracts.md',
   'docs/architecture-diagram.md',
   'docs/implementation-blueprint.md',
-  'docs/usability-testing.md',
-  'docs/video-presentation-script.md'
+  'docs/usability-testing.md'
 ];
 
 requiredFiles.forEach((file) => {

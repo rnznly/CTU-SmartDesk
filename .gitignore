@@ -23,3 +23,7 @@ yarn-debug.log*
 *.tar.gz
 *.mp4
 *.pdf
+
+# Private author scripts & rehearsal guides
+docs/video-presentation-script.md
+
