@@ -1,6 +1,6 @@
----
+﻿---
 version: alpha
-name: BatCavaDesign
+name: BatCaveDesign
 description: "A dark-canvas engineering and campus operations design system anchored in the deepest obsidian void (#08090a / #010102), paired with the official Cebu Technological University monochrome seal, dignified CTU Maroon (#7B1113 / #800000) micro-accent notches, and Google Stitch Home's signature violet/lavender (#a78bfa / #5e6ad2) dynamic luminescence. Features an organic undulating spatial wave canvas with physical pointer repulsion (elastic spring physics), a four-step surface ladder framed by 1px hairline borders (#23252a to #34343a), Geist Pixel display typography, non-stacking floating pill toasts with glowing status dots, and tactile multi-channel auditory feedback."
 
 colors:
@@ -200,7 +200,7 @@ components:
     waveSpeed: 0.024
 ---
 
-# BatCava Design System (`BatCavaDesign.md`)
+# BatCave Design System (`BatCaveDesign.md`)
 
 > **Architectural Specification & Visual Design Language**  
 > *Developed for High-Stakes Institutional Operations, Modern AI-Native Software Craft, and Cebu Technological University Digital Ecosystems.*
@@ -209,7 +209,7 @@ components:
 
 ## 1. Executive Philosophy & Brand DNA
 
-The **BatCava Design System** is an engineering-first, high-signal design framework born at the intersection of three rigorous design philosophies:
+The **BatCave Design System** is an engineering-first, high-signal design framework born at the intersection of three rigorous design philosophies:
 
 1. **Google Stitch AI Canvas (`stitch.google.com/home`):** An organic, living digital workspace featuring harmonic undulating mathematical wave motion, physical cursor repulsion ripples, and radiant violet/lavender (`#a78bfa`) luminescence.
 2. **Bryl Lim & Linear Minimalism (`bryllim.com` / `linear.app`):** An uncompromising rejection of skeuomorphic gloss, excessive blur, and decorative clutter. Hierarchy is governed through disciplined 4-tier surface stacking, crisp 1px hairline borders (`#23252a`), and negative typographic tracking.
@@ -217,20 +217,20 @@ The **BatCava Design System** is an engineering-first, high-signal design framew
 
 ```
        [ Deep Obsidian Canvas: #08090a / #010102 ]
-                           │
-       ┌───────────────────┴───────────────────┐
-       ▼                                       ▼
+                           â”‚
+       â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+       â–¼                                       â–¼
 [ Google Stitch Home ]                 [ Bryl Lim / Linear ]
-• Undulating Sine Wave                 • 4-Tier Surface Ladder
-• 160px Cursor Ripple                  • 1px Hairline Borders
-• #a78bfa Violet Glow                  • Non-stacking Pills
-       │                                       │
-       └───────────────────┬───────────────────┘
-                           ▼
+â€¢ Undulating Sine Wave                 â€¢ 4-Tier Surface Ladder
+â€¢ 160px Cursor Ripple                  â€¢ 1px Hairline Borders
+â€¢ #a78bfa Violet Glow                  â€¢ Non-stacking Pills
+       â”‚                                       â”‚
+       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                           â–¼
           [ CTU Institutional Monochrome ]
-          • Official 1911 Circular Seal
-          • #7B1113 Maroon Accent Notch
-          • Tactile Multichannel Audio
+          â€¢ Official 1911 Circular Seal
+          â€¢ #7B1113 Maroon Accent Notch
+          â€¢ Tactile Multichannel Audio
 ```
 
 ---
@@ -267,7 +267,7 @@ Surfaces never rely on soft atmospheric drop shadows to express depth. Depth is 
 
 ## 3. Interactive Halftone Canvas Engine (Google Stitch Home Physics)
 
-The hallmark feature of the BatCava system is the living canvas backdrop (`interactiveHalftone.js`), engineered according to the exact mathematical physics of `stitch.google.com/home`:
+The hallmark feature of the BatCave system is the living canvas backdrop (`interactiveHalftone.js`), engineered according to the exact mathematical physics of `stitch.google.com/home`:
 
 ### 3.1 Undulating Spatial Wave Math
 Rather than static dots or linear noise, every point on the 30px grid undulates smoothly in two spatial dimensions:
@@ -329,16 +329,16 @@ The system employs a strict tripartite typographical hierarchy:
 Auditory cues provide instant tactile confirmation for keyboard and mouse interactions:
 
 ```
-┌─────────────────────────────────┬────────────────────────────────────┐
-│ User Action                     │ Audio Feedback Asset               │
-├─────────────────────────────────┼────────────────────────────────────┤
-│ Submit Ticket / Sound Toggle    │ Apple Pay Confirmation Chime       │
-│ Auto-Fill Sample Ticket Click   │ Scribblenauts Key Press            │
-│ 503 Server Outage Toggle        │ Nintendo Switch Notification Sound │
-│ Dropdown Trigger / Filter Click │ Retractable Ballpoint Pen Click    │
-│ Card Hover / Choice Hover       │ Mechanical Typewriter Tick         │
-│ General Utility Click           │ Minecraft Wooden Click             │
-└─────────────────────────────────┴────────────────────────────────────┘
+â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+â”‚ User Action                     â”‚ Audio Feedback Asset               â”‚
+â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¼â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
+â”‚ Submit Ticket / Sound Toggle    â”‚ Apple Pay Confirmation Chime       â”‚
+â”‚ Auto-Fill Sample Ticket Click   â”‚ Scribblenauts Key Press            â”‚
+â”‚ 503 Server Outage Toggle        â”‚ Nintendo Switch Notification Sound â”‚
+â”‚ Dropdown Trigger / Filter Click â”‚ Retractable Ballpoint Pen Click    â”‚
+â”‚ Card Hover / Choice Hover       â”‚ Mechanical Typewriter Tick         â”‚
+â”‚ General Utility Click           â”‚ Minecraft Wooden Click             â”‚
+â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
 ---
@@ -347,11 +347,11 @@ Auditory cues provide instant tactile confirmation for keyboard and mouse intera
 
 ### 6.1 The CTU Seal
 - **Asset Paths:**
-  - Favicon: `favicon.ico` (32×32 root icon)
-  - Tab Icon: `assets/icons/favicon-32x32.png` & `favicon.png` (64×64)
-  - iOS Home Screen: `assets/icons/apple-touch-icon.png` (180×180)
+  - Favicon: `favicon.ico` (32Ã—32 root icon)
+  - Tab Icon: `assets/icons/favicon-32x32.png` & `favicon.png` (64Ã—64)
+  - iOS Home Screen: `assets/icons/apple-touch-icon.png` (180Ã—180)
   - PWA Manifest: `assets/icons/icon-192.png` & `icon-512.png`
-- **Treatment:** 100% transparent PNG circular seal centered on the 1911 university crest. Rendered in clean monochrome grayscale to integrate harmoniously with the BatCava dark void without color clashing.
+- **Treatment:** 100% transparent PNG circular seal centered on the 1911 university crest. Rendered in clean monochrome grayscale to integrate harmoniously with the BatCave dark void without color clashing.
 
 ### 6.2 The Maroon Notch Accent
 - Located on key structural anchor containers (e.g., top-left brand block).
@@ -369,5 +369,6 @@ Auditory cues provide instant tactile confirmation for keyboard and mouse intera
 ---
 
 *Authored by the Google DeepMind & Antigravity Advanced Agentic Coding Team.*  
-*Design Spec Name:* `BatCavaDesign.md`  
+*Design Spec Name:* `BatCaveDesign.md`  
 *Target Repository:* `F:\Graphic Designs\AwesomeDesign\awesome-design-md\design-md`
+
