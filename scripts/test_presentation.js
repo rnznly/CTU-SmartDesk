@@ -114,7 +114,6 @@ console.log('\n--- 3. PWA Manifest & Service Worker Audit ---');
 const manifestContent = JSON.parse(fs.readFileSync(path.join(projectRoot, 'manifest.json'), 'utf8'));
 assert(manifestContent.name.includes('CTU SmartDesk'), 'Manifest contains app name');
 assert(manifestContent.display === 'standalone', 'Manifest display mode is standalone');
-assert(manifestContent.theme_color === '#010102', 'Manifest theme color is Linear dark (#010102)');
 assert(Array.isArray(manifestContent.icons) && manifestContent.icons.length >= 2, 'Manifest defines 192 and 512 icons');
 
 const swContent = fs.readFileSync(path.join(projectRoot, 'service-worker.js'), 'utf8');
@@ -122,13 +121,14 @@ assert(swContent.includes('addEventListener(\'install\''), 'Service worker handl
 assert(swContent.includes('addEventListener(\'activate\''), 'Service worker handles activate event');
 assert(swContent.includes('addEventListener(\'fetch\''), 'Service worker handles fetch event (Cache-First)');
 
-// 4. Linear Design System Token Verification (css/styles.css)
-console.log('\n--- 4. Linear Design System Token Audit ---');
+// 4. Design System Token Audit (Bryl Lim Minimalist Monochrome + Halftone)
+console.log('\n--- 4. Bryl Lim Design System Token Audit ---');
 const stylesContent = fs.readFileSync(path.join(projectRoot, 'css/styles.css'), 'utf8');
-assert(stylesContent.includes('#010102'), 'Linear Canvas #010102 present');
-assert(stylesContent.includes('#0F1011'), 'Linear Surface-1 #0F1011 present');
-assert(stylesContent.includes('#23252A'), 'Linear Hairline #23252A present');
-assert(stylesContent.includes('#5E6AD2'), 'Linear Signature Lavender #5E6AD2 present');
+assert(stylesContent.includes('--bg:'), 'CSS variable --bg present');
+assert(stylesContent.includes('--ink:'), 'CSS variable --ink present');
+assert(stylesContent.includes('--g200:'), 'Neutral gray token --g200 present');
+assert(stylesContent.includes('.halftone'), 'Bryl Lim Halftone dot field present');
+assert(stylesContent.includes('Geist'), 'Geist typography present');
 assert(stylesContent.includes('#7B1113'), 'CTU Maroon brand accent #7B1113 present');
 
 // 5. JavaScript Syntax & Export Integrity

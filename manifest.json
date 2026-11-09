@@ -4,8 +4,8 @@
   "description": "Digital campus service request tracking system for Cebu Technological University",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#010102",
-  "theme_color": "#010102",
+  "background_color": "#ffffff",
+  "theme_color": "#0a0a0a",
   "orientation": "any",
   "categories": ["education", "productivity", "utilities"],
   "icons": [

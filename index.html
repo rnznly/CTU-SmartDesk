@@ -5,23 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CTU SmartDesk — Campus Service Request System</title>
   <meta name="description" content="Offline-first Progressive Web Application for managing campus equipment, laboratory, and facility service requests at Cebu Technological University." />
-  <meta name="theme-color" content="#010102" />
+  <meta name="theme-color" content="#ffffff" />
 
   <!-- PWA Manifest & App Icons -->
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
 
-  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <!-- Google Fonts: Geist & Geist Mono (bryllim.com Typography) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
 
-  <!-- Stylesheets (Linear Design System) -->
+  <!-- Stylesheets (Bryl Lim Minimalist Monochrome + Halftone) -->
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/components.css" />
 </head>
 <body>
+
+  <!-- ========================================================================
+       PAGE-WIDE HALFTONE BACKDROP (bryllim.com signature element)
+       ======================================================================== -->
+  <div aria-hidden="true" class="backdrop-halftone-container">
+    <div class="halftone halftone-wide mask-tr"></div>
+    <div class="halftone mask-bl"></div>
+  </div>
 
   <!-- ========================================================================
        APPLICATION HEADER (#app-header)
@@ -39,13 +47,30 @@
         </div>
       </div>
 
-      <!-- Right: Network Status Badge & 503 Outage Toggle -->
+      <!-- Right: System Controls (Theme Switcher, Network, 503 Outage) -->
       <div class="system-controls">
+        <!-- Theme Switcher Pill (bryllim.com style) -->
+        <div class="theme-switch" role="radiogroup" aria-label="Color theme">
+          <button type="button" class="theme-opt is-active" id="theme-light-btn" data-theme="light" title="Light mode" aria-label="Light mode">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+          </button>
+          <button type="button" class="theme-opt" id="theme-dark-btn" data-theme="dark" title="Dark mode" aria-label="Dark mode">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Network Status Badge -->
         <div id="network-status-badge" role="status" aria-live="polite">
           <span class="status-dot"></span>
           <span id="network-status-text">Online</span>
         </div>
 
+        <!-- 503 Outage Toggle (Technical Challenge A) -->
         <label class="outage-toggle-wrapper" id="outage-wrapper" for="toggle-server-failure" title="Toggle simulated 503 HTTP Server Outage">
           <input type="checkbox" id="toggle-server-failure" aria-label="Simulate 503 Outage" />
           <span class="outage-toggle-label">Simulate 503 Outage</span>
@@ -65,7 +90,7 @@
         <div class="form-card-header">
           <div>
             <h2 class="form-card-title">New Service Request</h2>
-            <p class="form-card-subtitle">Log a campus facility, laboratory, or equipment issue.</p>
+            <p class="form-card-subtitle">Log a campus facility, laboratory, or equipment concern.</p>
           </div>
           <span class="gold-accent-pill">SLA: 24h</span>
         </div>
@@ -136,7 +161,7 @@
 
           <!-- Primary Submit CTA -->
           <button type="submit" id="btn-submit-request">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
               <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
             </svg>
             <span>Submit Service Request</span>
@@ -205,7 +230,7 @@
       <!-- Empty State Card -->
       <div id="empty-state-view">
         <div class="empty-icon-circle" aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
         </div>

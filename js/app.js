@@ -1,7 +1,7 @@
 /**
  * @file app.js
  * @description Master Application Bootstrap & Coordinator (Presenter / Controller Layer).
- * Coordinates FormView, ListView, Service Worker registration, Network state events,
+ * Coordinates FormView, ListView, Theme Switcher, Service Worker registration, Network state events,
  * and the Technical Challenge A Server Outage switch.
  */
 
@@ -28,7 +28,10 @@ class App {
   async init() {
     console.log('[CTU SmartDesk] Initializing Application...');
 
-    // 1. Initialize Views
+    // 1. Setup Theme Switcher (Bryl Lim style Light / Dark modes)
+    this._setupThemeSwitcher();
+
+    // 2. Initialize Views
     this.listView = new ListView();
     this.formView = new FormView({
       onRequestSubmitted: async () => {
@@ -36,19 +39,66 @@ class App {
       }
     });
 
-    // 2. Initial Data Load
+    // 3. Initial Data Load
     await this.listView.reloadData();
 
-    // 3. Technical Challenge A: Setup Server Outage Toggle
+    // 4. Technical Challenge A: Setup Server Outage Toggle
     this._setupOutageToggle();
 
-    // 4. Setup Network Online/Offline Listeners
+    // 5. Setup Network Online/Offline Listeners
     this._setupNetworkListeners();
 
-    // 5. Part III: Register PWA Service Worker
+    // 6. Part III: Register PWA Service Worker
     this._registerServiceWorker();
 
     console.log('[CTU SmartDesk] Application ready.');
+  }
+
+  /**
+   * Theme Switcher: Bryl Lim Monochrome Light/Dark Mode Manager
+   * @private
+   */
+  _setupThemeSwitcher() {
+    const lightBtn = document.getElementById('theme-light-btn');
+    const darkBtn = document.getElementById('theme-dark-btn');
+    if (!lightBtn || !darkBtn) return;
+
+    const setTheme = (theme) => {
+      const isDark = theme === 'dark';
+      document.documentElement.classList.toggle('dark', isDark);
+      lightBtn.classList.toggle('is-active', !isDark);
+      darkBtn.classList.toggle('is-active', isDark);
+
+      // Update meta theme-color
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', isDark ? '#0c0c0f' : '#ffffff');
+      }
+
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('smartdesk_theme', theme);
+        }
+      } catch {}
+    };
+
+    // Load saved or system theme preference
+    let preferredTheme = 'light';
+    try {
+      if (typeof localStorage !== 'undefined') {
+        const saved = localStorage.getItem('smartdesk_theme');
+        if (saved) {
+          preferredTheme = saved;
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          preferredTheme = 'dark';
+        }
+      }
+    } catch {}
+
+    setTheme(preferredTheme);
+
+    lightBtn.addEventListener('click', () => setTheme('light'));
+    darkBtn.addEventListener('click', () => setTheme('dark'));
   }
 
   /**
