@@ -129,8 +129,24 @@ class SoundService {
 
     const onIcon = btn.querySelector('[data-sound-on]');
     const offIcon = btn.querySelector('[data-sound-off]');
-    if (onIcon) onIcon.toggleAttribute('hidden', !this.enabled);
-    if (offIcon) offIcon.toggleAttribute('hidden', this.enabled);
+    if (onIcon) {
+      if (this.enabled) {
+        onIcon.removeAttribute('hidden');
+        onIcon.style.display = 'block';
+      } else {
+        onIcon.setAttribute('hidden', '');
+        onIcon.style.display = 'none';
+      }
+    }
+    if (offIcon) {
+      if (this.enabled) {
+        offIcon.setAttribute('hidden', '');
+        offIcon.style.display = 'none';
+      } else {
+        offIcon.removeAttribute('hidden');
+        offIcon.style.display = 'block';
+      }
+    }
   }
 
   /**
