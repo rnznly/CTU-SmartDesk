@@ -255,7 +255,8 @@ class SoundService {
       '.filter-bar-row button'
     ].join(',');
 
-    // 1. Element Hover: Typewriter Sound (containers & nav buttons)
+    // 1. Box / Nav Button Hover: Typewriter Sound
+    // Plays ONCE when entering the box from outside, never rapidly across internal elements!
     document.addEventListener(
       'pointerenter',
       (e) => {
@@ -263,16 +264,22 @@ class SoundService {
         const target = e.target;
         if (!(target instanceof Element)) return;
 
-        const matched = target.closest(hoverTypewriterSelector);
-        if (matched) {
-          const now = performance.now();
-          if (now - this.lastHoverTime >= this.hoverThrottleMs) {
-            this.lastHoverTime = now;
-            this.playTypewriter();
-          }
+        const box = target.closest(hoverTypewriterSelector);
+        if (!box) return;
+
+        // Only fire if entering the box from the outside!
+        const fromElement = e.relatedTarget;
+        if (fromElement instanceof Node && box.contains(fromElement)) {
+          return; // Already inside this box
+        }
+
+        const now = performance.now();
+        if (now - this.lastHoverTime >= 100) {
+          this.lastHoverTime = now;
+          this.playTypewriter();
         }
       },
-      true // Capture phase
+      true
     );
 
     // 2. Click Handler:
