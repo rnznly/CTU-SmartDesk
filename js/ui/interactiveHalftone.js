@@ -7,8 +7,8 @@
  * Characteristics:
  * - Fixed grid geometry: dots stay anchored (glow only, zero chaotic displacement)
  * - Compact hover radius (~55px) illuminating only the immediate cluster beneath pointer
- * - Subtle, controlled luminescence (max ~0.40 alpha in dark, ~0.30 in light)
- * - Microscopic expansion (0.9px to 1.25px max, zero giant bloom halos)
+ * - Subtle, controlled luminescence (max ~0.43 alpha in dark, ~0.33 in light)
+ * - Microscopic expansion (0.9px to 1.28px max, zero giant bloom halos)
  * - Crisp ~0.6s smooth decay for an understated, elegant feel
  * - Complete idle hibernation (0% CPU/GPU overhead when pointer is stationary)
  * ============================================================================
@@ -165,8 +165,8 @@ export class InteractiveHalftone {
     const dotR = isDark ? 245 : 12;
     const dotG = isDark ? 245 : 12;
     const dotB = isDark ? 250 : 12;
-    const baseAlpha = isDark ? 0.075 : 0.065;
-    const maxGlowAlpha = isDark ? 0.40 : 0.30;
+    const baseAlpha = isDark ? 0.095 : 0.085;
+    const maxGlowAlpha = isDark ? 0.43 : 0.33;
 
     this.ctx.clearRect(0, 0, this.width, this.height);
 
@@ -198,7 +198,7 @@ export class InteractiveHalftone {
       }
 
       // 3. Render dot (Subtle, crisp, minimal expansion - NO giant halos)
-      const currentRadius = this.baseRadius + d.glow * 0.35;
+      const currentRadius = this.baseRadius + d.glow * 0.38;
       const alpha = baseAlpha + d.glow * (maxGlowAlpha - baseAlpha);
 
       this.ctx.beginPath();
