@@ -22,10 +22,10 @@ export class InteractiveHalftone {
     this.ctx = this.canvas.getContext('2d', { alpha: true });
     this.dots = [];
 
-    // Configuration parameters (Google Stitch Home specification)
-    this.spacing = 30;            // Grid spacing for dots
-    this.dotRadiusBase = 1.35;    // Base resting radius (clean, distinct circular points)
-    this.mouseRadius = 160;       // Interaction/ripple radius (Google Stitch Home ~150-160px)
+    // Configuration parameters (Google Stitch Home specification - 50% scale)
+    this.spacing = 15;            // Grid spacing for dots (50% scaled down from 30px)
+    this.dotRadiusBase = 0.75;    // Base resting radius (crisp 1.5px diameter)
+    this.mouseRadius = 110;       // Interaction/ripple radius (50% scaled)
 
     // Mouse tracking state
     this.mouse = {
@@ -185,15 +185,15 @@ export class InteractiveHalftone {
     for (let i = 0; i < this.dots.length; i++) {
       const dot = this.dots[i];
 
-      // 1. Organic wave calculation (sine/cosine spatial wave)
-      const waveX = Math.sin(this.time + dot.originY * 0.012) * 4.5;
-      const waveY = Math.cos(this.time + dot.originX * 0.012) * 4.5;
+      // 1. Organic wave calculation (sine/cosine spatial wave - 50% scale amplitude)
+      const waveX = Math.sin(this.time + dot.originY * 0.024) * 2.25;
+      const waveY = Math.cos(this.time + dot.originX * 0.024) * 2.25;
 
       let targetX = dot.originX + waveX;
       let targetY = dot.originY + waveY;
       let proximityForce = 0;
 
-      // 2. Mouse ripple & organic repulsion (Google Stitch signature interaction)
+      // 2. Mouse ripple & organic repulsion (Google Stitch signature interaction - 50% scale)
       if (hasMouse) {
         const dx = mx - dot.originX;
         const dy = my - dot.originY;
@@ -206,8 +206,8 @@ export class InteractiveHalftone {
 
           const angle = Math.atan2(dy, dx);
           // Gently push dots away to form an organic interactive ripple indentation
-          targetX -= Math.cos(angle) * force * 28;
-          targetY -= Math.sin(angle) * force * 28;
+          targetX -= Math.cos(angle) * force * 14;
+          targetY -= Math.sin(angle) * force * 14;
         }
       }
 
@@ -215,8 +215,8 @@ export class InteractiveHalftone {
       dot.x += (targetX - dot.x) * 0.12;
       dot.y += (targetY - dot.y) * 0.12;
 
-      // 4. Dot size & luminescence
-      const dotSize = this.dotRadiusBase + proximityForce * 1.5;
+      // 4. Dot size & luminescence (50% scale)
+      const dotSize = this.dotRadiusBase + proximityForce * 0.75;
       const waveShimmer = Math.sin(this.time * 1.4 + dot.originX * 0.018) * 0.08;
       const alpha = Math.min(
         1,

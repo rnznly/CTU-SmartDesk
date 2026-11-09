@@ -143,7 +143,7 @@ spacing:
   lg: 24px
   xl: 32px
   xxl: 48px
-  grid: 30px
+  grid: 15px
   section: 96px
 
 components:
@@ -196,7 +196,7 @@ components:
     spacing: "{spacing.grid}"
     baseDotColor: "{colors.halftone-dot}"
     illuminatedDotColor: "{colors.halftone-glow}"
-    mouseRepulsionRadius: 160
+    mouseRepulsionRadius: 110
     waveSpeed: 0.024
 ---
 

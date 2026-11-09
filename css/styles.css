@@ -165,12 +165,12 @@ body {
 
 .halftone {
   position: absolute;
-  background-image: radial-gradient(circle at center, var(--halftone) 1.2px, transparent 1.8px);
-  background-size: 30px 30px;
+  background-image: radial-gradient(circle at center, var(--halftone) 0.75px, transparent 1.2px);
+  background-size: 15px 15px;
 }
 
 .halftone-wide {
-  background-size: 30px 30px;
+  background-size: 15px 15px;
 }
 
 .mask-tr {
