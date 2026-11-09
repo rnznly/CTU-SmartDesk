@@ -1,0 +1,7 @@
+.git
+docs
+*.zip
+scripts
+node_modules
+*.md
+!README.md

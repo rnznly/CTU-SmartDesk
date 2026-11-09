@@ -1,0 +1,7 @@
+services:
+  smartdesk:
+    build: .
+    container_name: ctu-smartdesk-app
+    ports:
+      - "8088:80"
+    restart: unless-stopped
