@@ -1,14 +1,14 @@
 /**
  * ============================================================================
- * INTERFACE SOUND SERVICE (Web Audio API Synthesizer)
+ * INTERFACE SOUND SERVICE (Typewriter Hover & Minecraft Click / Apple Pay)
  * ============================================================================
- * Synthesizes ultra-clean UI feedback audio without external audio files.
+ * High-performance audio engine with Web Audio API buffer playback and fallback.
  *
- * Features:
- * - Subtle "tick" sound when hovering over form textfields or buttons
- * - Iconic Apple Pay ascending two-tone chime when buttons are clicked
- * - Sound toggle button controller with localStorage persistence
- * - Complies with browser autoplay policies (resumes AudioContext on interaction)
+ * Mappings:
+ * - Hover over elements -> Typewriter mechanical key sound (MyInstants typewriter-15339)
+ * - Click #btn-submit-request -> Apple Pay ascending two-tone chime
+ * - Click #sound-toggle-btn -> Mute/unmute toggle state (no minecraft sound)
+ * - Click any other button/interactive element -> Minecraft click (MyInstants minecraft-click)
  * ============================================================================
  */
 
@@ -16,13 +16,24 @@ class SoundService {
   constructor() {
     this.ctx = null;
     this.enabled = true;
-    this.lastTickTime = 0;
-    this.tickThrottleMs = 70; // Prevent spamming ticks on rapid mouse sweeps
+    this.lastHoverTime = 0;
+    this.hoverThrottleMs = 65; // Throttles rapid mouse sweeps
     this.storageKey = 'smartdesk_sounds_enabled';
+
+    // AudioBuffers cache
+    this.buffers = {
+      typewriter: null,
+      minecraftClick: null
+    };
+
+    this.soundPaths = {
+      typewriter: './assets/sounds/typewriter.mp3',
+      minecraftClick: './assets/sounds/minecraft_click.mp3'
+    };
   }
 
   /**
-   * Initializes audio system and binds UI listeners.
+   * Initializes audio system, preloads audio buffers, and binds UI listeners.
    */
   init() {
     // 1. Load sound preference (defaults to true)
@@ -37,16 +48,20 @@ class SoundService {
 
     this._updateToggleButtonUI();
 
-    // 2. AudioContext lazy activator on first user gesture
-    const unlockAudio = () => {
+    // 2. AudioContext unlocker & buffer preloader on first user gesture
+    const unlockAndLoadAudio = () => {
       this._getAudioContext();
-      window.removeEventListener('pointerdown', unlockAudio);
-      window.removeEventListener('keydown', unlockAudio);
+      this._preloadAudioBuffers();
+      window.removeEventListener('pointerdown', unlockAndLoadAudio);
+      window.removeEventListener('keydown', unlockAndLoadAudio);
     };
-    window.addEventListener('pointerdown', unlockAudio, { passive: true, once: true });
-    window.addEventListener('keydown', unlockAudio, { passive: true, once: true });
+    window.addEventListener('pointerdown', unlockAndLoadAudio, { passive: true, once: true });
+    window.addEventListener('keydown', unlockAndLoadAudio, { passive: true, once: true });
 
-    // 3. Setup Global UI Sound Listeners (Hover ticks & Click chimes)
+    // Try preloading buffers immediately if browser allows
+    this._preloadAudioBuffers();
+
+    // 3. Setup Global UI Sound Listeners
     this._bindUiSoundTriggers();
   }
 
@@ -70,6 +85,64 @@ class SoundService {
   }
 
   /**
+   * Pre-fetches and decodes the audio buffers into Web Audio memory.
+   * @private
+   */
+  async _preloadAudioBuffers() {
+    const ctx = this._getAudioContext();
+    if (!ctx) return;
+
+    const loadSound = async (key, url) => {
+      if (this.buffers[key]) return;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) return;
+        const arrayBuffer = await response.arrayBuffer();
+        const decodedBuffer = await ctx.decodeAudioData(arrayBuffer);
+        this.buffers[key] = decodedBuffer;
+      } catch {}
+    };
+
+    await Promise.all([
+      loadSound('typewriter', this.soundPaths.typewriter),
+      loadSound('minecraftClick', this.soundPaths.minecraftClick)
+    ]);
+  }
+
+  /**
+   * Internal helper to play a decoded AudioBuffer or fallback.
+   * @private
+   */
+  _playAudio(bufferKey, volume = 0.5) {
+    if (!this.enabled) return;
+    const ctx = this._getAudioContext();
+    if (!ctx) return;
+
+    const buffer = this.buffers[bufferKey];
+    if (buffer) {
+      try {
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        const gain = ctx.createGain();
+        gain.gain.value = volume;
+        source.connect(gain).connect(ctx.destination);
+        source.start(0);
+        return;
+      } catch {}
+    }
+
+    // Fallback: HTMLAudioElement
+    try {
+      const fallbackUrl = this.soundPaths[bufferKey];
+      if (fallbackUrl) {
+        const audio = new Audio(fallbackUrl);
+        audio.volume = volume;
+        audio.play().catch(() => {});
+      }
+    } catch {}
+  }
+
+  /**
    * Toggles sound on/off and returns new state.
    * @returns {boolean}
    */
@@ -83,9 +156,9 @@ class SoundService {
 
     this._updateToggleButtonUI();
 
-    // If turned on, play the Apple Pay chime as instant confirmation
+    // Subtle audio confirmation when turning sound ON
     if (this.enabled) {
-      this.playApplePay();
+      this.playMinecraftClick();
     }
 
     return this.enabled;
@@ -150,25 +223,33 @@ class SoundService {
   }
 
   /**
-   * Binds pointerenter hover ticks and click chimes.
+   * Binds pointerenter hover (typewriter) and click triggers (minecraft click / Apple Pay).
    * @private
    */
   _bindUiSoundTriggers() {
     if (typeof document === 'undefined') return;
 
-    // Selector targeting textfields, inputs, selects, textareas, and buttons
-    const hoverSelector = [
+    // Selector targeting elements for hover typewriter sound
+    const hoverElementsSelector = [
+      'a[href]',
+      'button',
       'input:not([type="hidden"])',
       'textarea',
       'select',
-      'button',
-      '.btn-status-action',
       '.theme-opt',
+      '.sound-toggle-btn',
       '.outage-toggle-wrapper',
-      '[role="button"]'
+      '.btn-status-action',
+      '.btn-copy-id',
+      '.btn-quick-fill',
+      '.metric-chip',
+      '.request-card',
+      '.status-badge',
+      '[role="button"]',
+      'label'
     ].join(',');
 
-    // Hover Tick Listener
+    // 1. Element Hover: Typewriter Sound
     document.addEventListener(
       'pointerenter',
       (e) => {
@@ -176,19 +257,22 @@ class SoundService {
         const target = e.target;
         if (!(target instanceof Element)) return;
 
-        const matched = target.closest(hoverSelector);
+        const matched = target.closest(hoverElementsSelector);
         if (matched) {
           const now = performance.now();
-          if (now - this.lastTickTime >= this.tickThrottleMs) {
-            this.lastTickTime = now;
-            this.playTick();
+          if (now - this.lastHoverTime >= this.hoverThrottleMs) {
+            this.lastHoverTime = now;
+            this.playTypewriter();
           }
         }
       },
-      true // Capture phase to catch all interactive children
+      true // Capture phase
     );
 
-    // Button Click: Apple Pay sound listener
+    // 2. Click Handler:
+    // - Submit Service Request (#btn-submit-request) -> Apple Pay ascending chime
+    // - Sound toggle button (#sound-toggle-btn) -> Skipped (managed separately in toggleSound)
+    // - Any other element/button -> Minecraft Click
     document.addEventListener(
       'click',
       (e) => {
@@ -196,13 +280,35 @@ class SoundService {
         const target = e.target;
         if (!(target instanceof Element)) return;
 
-        // Skip sound toggle button itself (it manages its own feedback)
-        if (target.closest('#sound-toggle-btn')) return;
+        // Skip sound toggle button (handled explicitly by toggleSound())
+        if (target.closest('#sound-toggle-btn')) {
+          return;
+        }
 
-        // Check if any button, submit, or clickable action was triggered
-        const btn = target.closest('button, [role="button"], input[type="submit"], .outage-toggle-wrapper');
-        if (btn && !btn.hasAttribute('disabled')) {
+        // Case A: Submit Service Request Button -> Apple Pay Chime
+        if (target.closest('#btn-submit-request')) {
           this.playApplePay();
+          return;
+        }
+
+        // Case B: Any other clickable element or button -> Minecraft Click
+        const clickable = target.closest([
+          'button',
+          'a[href]',
+          '.theme-opt',
+          '.outage-toggle-wrapper',
+          '.btn-status-action',
+          '.btn-copy-id',
+          '.btn-quick-fill',
+          '.btn-clear-search',
+          '#btn-reset-filters',
+          'input[type="submit"]',
+          'input[type="checkbox"]',
+          '[role="button"]'
+        ].join(','));
+
+        if (clickable && !clickable.hasAttribute('disabled')) {
+          this.playMinecraftClick();
         }
       },
       true
@@ -210,65 +316,22 @@ class SoundService {
   }
 
   /**
-   * Synthesizes a crisp, subtle mechanical tick sound for textfield/button hovers.
+   * Plays the Typewriter sound on element hover.
    */
-  playTick() {
-    if (!this.enabled) return;
-    const ctx = this._getAudioContext();
-    if (!ctx) return;
-
-    try {
-      const t = ctx.currentTime;
-      const master = ctx.createGain();
-      master.gain.value = 0.22;
-      master.connect(ctx.destination);
-
-      // 1. High bandpass noise burst (creates tactile mechanical click texture)
-      const bufferSize = Math.max(1, Math.floor(0.016 * ctx.sampleRate));
-      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-      const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = (Math.random() * 2 - 1) * 0.5;
-      }
-
-      const noise = ctx.createBufferSource();
-      noise.buffer = buffer;
-
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(5400, t);
-      filter.Q.value = 2.2;
-
-      const noiseGain = ctx.createGain();
-      noiseGain.gain.setValueAtTime(0.0001, t);
-      noiseGain.gain.exponentialRampToValueAtTime(0.12, t + 0.001);
-      noiseGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.014);
-
-      noise.connect(filter).connect(noiseGain).connect(master);
-      noise.start(t);
-      noise.stop(t + 0.016);
-
-      // 2. High-frequency sine pip (2800 Hz) for a crisp glass tap
-      const osc = ctx.createOscillator();
-      const oscGain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(2800, t);
-
-      oscGain.gain.setValueAtTime(0.0001, t);
-      oscGain.gain.exponentialRampToValueAtTime(0.035, t + 0.001);
-      oscGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.012);
-
-      osc.connect(oscGain).connect(master);
-      osc.start(t);
-      osc.stop(t + 0.015);
-
-      setTimeout(() => master.disconnect(), 60);
-    } catch {}
+  playTypewriter() {
+    this._playAudio('typewriter', 0.4);
   }
 
   /**
-   * Synthesizes the iconic Apple Pay two-tone ascending chime (C6 -> G6)
-   * with crystalline harmonic shimmer and soft stereo acoustic space.
+   * Plays the Minecraft Click sound on general button/element clicks.
+   */
+  playMinecraftClick() {
+    this._playAudio('minecraftClick', 0.5);
+  }
+
+  /**
+   * Plays the Apple Pay two-tone ascending chime (C6 -> G6)
+   * specifically for #btn-submit-request.
    */
   playApplePay() {
     if (!this.enabled) return;
@@ -283,12 +346,12 @@ class SoundService {
 
       // --- TONE 1: C6 (1046.5 Hz) ---
       this._synthesizeChimeNote(ctx, master, 1046.5, t, 0.005, 0.22, 0.2);
-      this._synthesizeChimeNote(ctx, master, 2093.0, t, 0.005, 0.15, 0.05); // High octave shimmer
+      this._synthesizeChimeNote(ctx, master, 2093.0, t, 0.005, 0.15, 0.05);
 
-      // --- TONE 2: G6 (1568.0 Hz) - arrives 85ms later (classic Apple Pay interval) ---
+      // --- TONE 2: G6 (1568.0 Hz) - arrives 85ms later ---
       const t2 = t + 0.085;
       this._synthesizeChimeNote(ctx, master, 1568.0, t2, 0.005, 0.35, 0.24);
-      this._synthesizeChimeNote(ctx, master, 3136.0, t2, 0.005, 0.28, 0.06); // Harmonic bell presence
+      this._synthesizeChimeNote(ctx, master, 3136.0, t2, 0.005, 0.28, 0.06);
 
       // --- Subtle Warm Acoustic Shimmer Reverb ---
       this._applyShimmerReverb(ctx, master, t);
