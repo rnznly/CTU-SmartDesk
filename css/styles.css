@@ -149,6 +149,20 @@ body {
   overflow: hidden;
 }
 
+.halftone-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* When interactive canvas is mounted, let reactive particles take stage */
+.backdrop-halftone-container.has-canvas .halftone {
+  display: none;
+}
+
 .halftone {
   position: absolute;
   background-image: radial-gradient(circle at center, var(--halftone) 1px, transparent 1.6px);
@@ -321,23 +335,24 @@ body {
   color: var(--color-error);
 }
 
-/* Outage Toggle (Technical Challenge A - Clean Monochrome) */
+/* Outage Toggle (Technical Challenge A - Precision Minimalist Micro-Switch) */
 .outage-toggle-wrapper {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  padding: 3px 9px;
+  gap: 0.5rem;
+  padding: 3px 9px 3px 9px;
   background-color: rgb(var(--g50));
   border: 1px solid rgb(var(--g200));
   border-radius: var(--radius-full);
   cursor: pointer;
   user-select: none;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   color: rgb(var(--g600));
-  transition: var(--transition-fast);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .outage-toggle-wrapper:hover {
@@ -345,49 +360,66 @@ body {
   color: rgb(var(--ink));
 }
 
+/* Precision Slider Switch Track */
 .outage-toggle-wrapper input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
-  width: 12px;
+  width: 22px;
   height: 12px;
-  border: 1px solid rgb(var(--g400));
-  border-radius: 2px;
-  background-color: transparent;
-  cursor: pointer;
+  background-color: rgb(var(--g300));
+  border: none;
+  border-radius: 999px;
   position: relative;
-  transition: var(--transition-fast);
+  cursor: pointer;
+  outline: none;
+  margin: 0;
+  flex-shrink: 0;
+  transition: background-color 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Micro Slider Thumb */
+.outage-toggle-wrapper input[type="checkbox"]::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 8px;
+  height: 8px;
+  background-color: rgb(var(--bg));
+  border-radius: 50%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Checked Thumb Glide */
 .outage-toggle-wrapper input[type="checkbox"]:checked {
   background-color: rgb(var(--ink));
-  border-color: rgb(var(--ink));
 }
 
 .outage-toggle-wrapper input[type="checkbox"]:checked::after {
-  content: '✓';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 9px;
-  color: rgb(var(--bg));
-  font-weight: 700;
+  transform: translateX(10px);
+}
+
+/* Active State: Clean neutral container, amber warning accent ONLY on switch track */
+.outage-toggle-wrapper.active {
+  border-color: rgb(var(--g300));
+  background-color: rgb(var(--g100));
+  color: rgb(var(--ink));
+}
+
+.outage-toggle-wrapper.active input[type="checkbox"] {
+  background-color: #D97706; /* Subtle warm amber warning dot/track */
+}
+
+html.dark .outage-toggle-wrapper.active input[type="checkbox"] {
+  background-color: #F59E0B;
 }
 
 .outage-toggle-label {
   font-size: inherit;
   font-weight: inherit;
   color: inherit;
-}
-
-.outage-toggle-wrapper.active {
-  border-color: var(--color-error);
-  color: var(--color-error);
-}
-
-.outage-toggle-wrapper.active input[type="checkbox"] {
-  background-color: var(--color-error);
-  border-color: var(--color-error);
+  line-height: 1;
 }
 
 /* --------------------------------------------------------------------------

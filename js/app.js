@@ -9,11 +9,13 @@ import { FormView } from './ui/formView.js';
 import { ListView } from './ui/listView.js';
 import { mockApi } from './data/mockApi.js';
 import { notificationService } from './services/notificationService.js';
+import { InteractiveHalftone } from './ui/interactiveHalftone.js';
 
 class App {
   constructor() {
     this.formView = null;
     this.listView = null;
+    this.halftone = null;
 
     // Outage and Network DOM Elements
     this.outageCheckbox = document.getElementById('toggle-server-failure');
@@ -27,6 +29,13 @@ class App {
    */
   async init() {
     console.log('[CTU SmartDesk] Initializing Application...');
+
+    // 0. Setup Interactive Halftone Canvas (bryllim.com reactive dot grid)
+    try {
+      this.halftone = new InteractiveHalftone('halftone-canvas');
+    } catch (err) {
+      console.warn('[CTU SmartDesk] Interactive canvas failed to initialize:', err);
+    }
 
     // 1. Setup Theme Switcher (Bryl Lim style Light / Dark modes)
     this._setupThemeSwitcher();
@@ -73,6 +82,10 @@ class App {
       const metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (metaThemeColor) {
         metaThemeColor.setAttribute('content', isDark ? '#0c0c0f' : '#ffffff');
+      }
+
+      if (this.halftone) {
+        this.halftone.onThemeChange();
       }
 
       try {
