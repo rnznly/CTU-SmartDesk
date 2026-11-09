@@ -7,6 +7,7 @@
 
 import { requestService } from '../services/requestService.js';
 import { notificationService } from '../services/notificationService.js';
+import { soundService } from '../services/soundService.js';
 import { REQUEST_STATUS, STATUS_STYLE_MAP } from '../config/constants.js';
 
 export class ListView {
@@ -311,9 +312,11 @@ export class ListView {
    * @param {Event} event
    */
   async _handleCardInteraction(event) {
-    const copyBtn = event.target.closest('[data-action="copy"]');
+    const copyBtn = event.target.closest('[data-action="copy"], .btn-copy-id, .request-id-chip');
     if (copyBtn) {
-      const id = copyBtn.getAttribute('data-id');
+      const card = copyBtn.closest('.request-card');
+      const id = copyBtn.getAttribute('data-id') || copyBtn.querySelector('.btn-copy-id')?.getAttribute('data-id') || (card ? card.getAttribute('data-id') : null);
+      soundService.playScribblenauts();
       await this._copyToClipboard(id, copyBtn);
       return;
     }
@@ -333,6 +336,7 @@ export class ListView {
    * @param {HTMLElement} btn
    */
   async _copyToClipboard(text, btn) {
+    soundService.playScribblenauts();
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(text);

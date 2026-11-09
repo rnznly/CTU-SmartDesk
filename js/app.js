@@ -270,6 +270,7 @@ class App {
           .register('./service-worker.js')
           .then((registration) => {
             console.log('[CTU SmartDesk PWA] Service Worker registered with scope:', registration.scope);
+            registration.update();
           })
           .catch((error) => {
             console.warn('[CTU SmartDesk PWA] Service Worker registration failed:', error);

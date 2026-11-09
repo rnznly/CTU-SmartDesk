@@ -5,7 +5,7 @@
  * cache version management, and network fallback.
  */
 
-const CACHE_NAME = 'ctu-smartdesk-v25';
+const CACHE_NAME = 'ctu-smartdesk-v26';
 
 // Pre-cached core assets for 100% offline functionality
 const PRECACHE_ASSETS = [
@@ -96,7 +96,7 @@ self.addEventListener('fetch', (event) => {
   if (!url.protocol.startsWith('http')) return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
+    caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
       if (cachedResponse) {
         // Return cached asset immediately (Cache-First)
         // Optionally revalidate in background (Stale-While-Revalidate for non-static)

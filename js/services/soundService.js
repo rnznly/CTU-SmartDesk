@@ -29,6 +29,7 @@ class SoundService {
     this.enabled = true;
     this.lastHoverTime = 0;
     this.lastOutageSoundTime = 0;
+    this.lastScribblenautsTime = 0;
     this.hoverThrottleMs = 75; // Throttles rapid hover triggers
     this.storageKey = 'smartdesk_sounds_enabled';
 
@@ -124,7 +125,9 @@ class SoundService {
     await Promise.all([
       loadSound('typewriter', this.soundPaths.typewriter),
       loadSound('clickPen', this.soundPaths.clickPen),
-      loadSound('minecraftClick', this.soundPaths.minecraftClick)
+      loadSound('minecraftClick', this.soundPaths.minecraftClick),
+      loadSound('scribblenauts', this.soundPaths.scribblenauts),
+      loadSound('outageSwitch', this.soundPaths.outageSwitch)
     ]);
   }
 
@@ -318,8 +321,8 @@ class SoundService {
           return;
         }
 
-        // Case B2: Copy Request ID Button -> Scribblenauts Sound
-        if (target.closest('.btn-copy-id, [data-action="copy"]')) {
+        // Case B2: Copy Request ID Button / Chip -> Scribblenauts Sound
+        if (target.closest('.btn-copy-id, [data-action="copy"], .request-id-chip, [title*="Copy"]')) {
           this.playScribblenauts();
           return;
         }
@@ -348,6 +351,12 @@ class SoundService {
         }
 
         // Case E: Minecraft Click -> Any other clickable buttons/controls (clear search, reset filters)
+        // Strict guard: Never fire Minecraft on copy ID, sample fill, submit, outage, or status actions!
+        if (target.closest('.btn-copy-id, [data-action="copy"], .request-id-chip, [title*="Copy"]')) {
+          this.playScribblenauts();
+          return;
+        }
+
         const generalClickable = target.closest([
           'button',
           'a[href]',
@@ -360,6 +369,14 @@ class SoundService {
         ].join(','));
 
         if (generalClickable && !generalClickable.hasAttribute('disabled')) {
+          // Double safeguard: if generalClickable is copy ID or request-id-chip, play scribblenauts
+          if (
+            generalClickable.matches('.btn-copy-id, [data-action="copy"], .request-id-chip, [title*="Copy"]') ||
+            generalClickable.closest('.btn-copy-id, [data-action="copy"], .request-id-chip, [title*="Copy"]')
+          ) {
+            this.playScribblenauts();
+            return;
+          }
           this.playMinecraftClick();
         }
       },
@@ -375,10 +392,13 @@ class SoundService {
   }
 
   /**
-   * Plays the Scribblenauts key press sound on auto-fill sample click.
+   * Plays the Scribblenauts key press sound on auto-fill sample & copy ID actions.
    */
   playScribblenauts() {
-    this._playAudio('scribblenauts', 0.6);
+    const now = performance.now();
+    if (now - this.lastScribblenautsTime < 100) return;
+    this.lastScribblenautsTime = now;
+    this._playAudio('scribblenauts', 0.65);
   }
 
   /**
