@@ -4,4 +4,6 @@ services:
     container_name: ctu-smartdesk-app
     ports:
       - "8088:80"
+    volumes:
+      - .:/usr/share/nginx/html:ro
     restart: unless-stopped

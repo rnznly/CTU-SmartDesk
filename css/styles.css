@@ -1,9 +1,17 @@
 /* ==========================================================================
    CTU SmartDesk — Stylesheet
    Design System: Bryl Lim (bryllim.com) Minimalist Monochrome + Halftone
-   Ultra-clean light / dark canvas, Geist & Geist Mono typography,
-   signature halftone dot patterns, crisp hairlines, and CTU maroon accents.
+   Typography: Geist, Geist Mono & Geist Pixel
    ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   0. Geist Pixel Font-Face (Exact bryllim.com brand font)
+   -------------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('https://cdn.jsdelivr.net/gh/vercel/geist-pixel-font@main/fonts/webfonts/GeistPixel-Square.woff2') format('woff2');
+  font-display: swap;
+}
 
 /* --------------------------------------------------------------------------
    1. Design Tokens & Color Palettes (Light & Dark)
@@ -13,7 +21,7 @@
   --bg:                     255 255 255;
   --ink:                    10 10 10;
 
-  /* Neutral Gray Scale (Tailwind / Geist inspired) */
+  /* Neutral Gray Scale (Tailwind / Geist exact values) */
   --g50:                    250 250 250;
   --g100:                   245 245 245;
   --g200:                   233 233 233;
@@ -27,50 +35,41 @@
   --g950:                   10 10 10;
 
   /* Halftone Texture & Selection */
-  --halftone:               rgba(10, 10, 10, 0.12);
+  --halftone:               rgba(10, 10, 10, 0.09);
   --sel-bg:                 #0a0a0a;
   --sel-fg:                 #ffffff;
 
-  /* Institutional Accents */
-  --color-ctu-maroon:       #7B1113;
-  --color-ctu-maroon-hover: #981417;
-  --color-ctu-gold:         #D97706;
-  --color-ctu-gold-bg:      rgba(217, 119, 6, 0.1);
-
-  /* Status Tokens (Subtle modern pills) */
-  --status-pending-text:    #B45309;
-  --status-pending-bg:      rgba(245, 158, 11, 0.1);
-  --status-pending-border:  rgba(245, 158, 11, 0.25);
-
-  --status-progress-text:   #4338CA;
-  --status-progress-bg:     rgba(99, 102, 241, 0.1);
-  --status-progress-border: rgba(99, 102, 241, 0.25);
-
-  --status-resolved-text:   #15803D;
-  --status-resolved-bg:     rgba(34, 197, 94, 0.1);
-  --status-resolved-border: rgba(34, 197, 94, 0.25);
+  /* Semantic Dot Colors (Subtle 5px indicator dots) */
+  --dot-pending:            #D97706;
+  --dot-progress:           #6366F1;
+  --dot-resolved:           #16A34A;
 
   /* Semantic Feedback */
   --color-error:            #DC2626;
-  --color-error-bg:         rgba(239, 68, 68, 0.08);
-  --color-error-border:     rgba(239, 68, 68, 0.25);
+  --color-error-bg:         rgba(220, 38, 38, 0.06);
+  --color-error-border:     rgba(220, 38, 38, 0.25);
+
+  /* CTU Academic Identity Tokens */
+  --ctu-maroon:             #7B1113;
+  --ctu-gold:               #F2A900;
 
   /* Radii & Typography */
   --radius-sm:              4px;
   --radius-md:              8px;
-  --radius-lg:              12px;
+  --radius-lg:              10px;
   --radius-full:            9999px;
 
   --font-sans:              'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono:              'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-pixel:             'Geist Pixel', ui-monospace, monospace;
 
   /* Transitions */
   --transition-fast:        0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-normal:      0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal:      0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* --------------------------------------------------------------------------
-   Dark Mode Palette (Exact bryllim.com values)
+   Dark Mode Palette (Exact bryllim.com dark mode)
    -------------------------------------------------------------------------- */
 html.dark {
   --bg:                     12 12 15;
@@ -88,21 +87,13 @@ html.dark {
   --g900:                   240 240 243;
   --g950:                   250 250 250;
 
-  --halftone:               rgba(244, 244, 245, 0.12);
+  --halftone:               rgba(244, 244, 245, 0.09);
   --sel-bg:                 #fafafa;
   --sel-fg:                 #0a0a0a;
 
-  --status-pending-text:    #FBBF24;
-  --status-pending-bg:      rgba(245, 158, 11, 0.15);
-  --status-pending-border:  rgba(245, 158, 11, 0.3);
-
-  --status-progress-text:   #A5B4FC;
-  --status-progress-bg:     rgba(99, 102, 241, 0.15);
-  --status-progress-border: rgba(99, 102, 241, 0.3);
-
-  --status-resolved-text:   #4ADE80;
-  --status-resolved-bg:     rgba(34, 197, 94, 0.15);
-  --status-resolved-border: rgba(34, 197, 94, 0.3);
+  --dot-pending:            #F59E0B;
+  --dot-progress:           #818CF8;
+  --dot-resolved:           #22C55E;
 
   color-scheme: dark;
 }
@@ -168,7 +159,6 @@ body {
   background-size: 13px 13px;
 }
 
-/* Radial / linear masks that fade the dot field — classic halftone gradient */
 .mask-tr {
   -webkit-mask-image: radial-gradient(ellipse 80% 80% at 100% 0%, #000 0%, transparent 65%);
   mask-image: radial-gradient(ellipse 80% 80% at 100% 0%, #000 0%, transparent 65%);
@@ -194,9 +184,9 @@ body {
   position: sticky;
   top: 0;
   z-index: 50;
-  background-color: rgba(var(--bg) / 0.85);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background-color: rgba(var(--bg) / 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid rgb(var(--g200));
   padding: 0 1.5rem;
   transition: background-color var(--transition-normal), border-color var(--transition-normal);
@@ -205,41 +195,24 @@ body {
 .header-inner {
   max-width: 1440px;
   margin: 0 auto;
-  height: 64px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
 }
 
-/* Brand Identity */
+/* Brand Identity (Pixel Font Minimalist Header - bryllim.com style) */
 .brand-group {
   display: flex;
   align-items: center;
-  gap: 0.875rem;
-}
-
-.ctu-crest {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, var(--color-ctu-maroon) 0%, #450A0B 100%);
-  border: 1px solid rgba(217, 119, 6, 0.4);
-  border-radius: var(--radius-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-mono);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: #FBBF24;
-  letter-spacing: 0.05em;
-  box-shadow: 0 2px 8px rgba(123, 17, 19, 0.25);
-  flex-shrink: 0;
+  gap: 0.75rem;
 }
 
 .brand-titles {
   display: flex;
   flex-direction: column;
+  gap: 1px;
 }
 
 .brand-title-row {
@@ -249,31 +222,35 @@ body {
 }
 
 .brand-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-family: var(--font-pixel);
+  font-size: 1.125rem;
+  font-weight: 400;
   color: rgb(var(--ink));
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
+  line-height: 1;
 }
 
 .brand-subtitle {
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
   color: rgb(var(--g500));
-  letter-spacing: -0.005em;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 /* System Controls */
 .system-controls {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.625rem;
 }
 
-/* Theme Switcher Pill (Exact bryllim.com styling) */
+/* Theme Switcher Pill (Exact bryllim.com sidebar styling) */
 .theme-switch {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  padding: 3px;
+  padding: 2px;
   border: 1px solid rgb(var(--g200));
   border-radius: var(--radius-full);
   background: rgb(var(--g50));
@@ -285,8 +262,8 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.45rem;
+  height: 1.45rem;
   border-radius: var(--radius-full);
   color: rgb(var(--g400));
   border: none;
@@ -302,83 +279,79 @@ body {
 .theme-opt.is-active {
   background: rgb(var(--bg));
   color: rgb(var(--ink));
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .theme-opt svg {
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
 }
 
-/* Network Status Badge */
+/* Network Status Badge (Clean Mono Pill) */
 #network-status-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  padding: 4px 10px;
+  padding: 3px 9px;
   border-radius: var(--radius-full);
-  background-color: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.2);
-  font-size: 0.75rem;
+  background-color: rgb(var(--g50));
+  border: 1px solid rgb(var(--g200));
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
   font-weight: 500;
-  color: #16A34A;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgb(var(--g600));
   transition: var(--transition-normal);
 }
 
-html.dark #network-status-badge {
-  background-color: rgba(34, 197, 94, 0.12);
-  color: #4ADE80;
-}
-
-#network-status-badge.offline {
-  background-color: rgba(239, 68, 68, 0.08);
-  border-color: rgba(239, 68, 68, 0.25);
-  color: #DC2626;
-}
-
-html.dark #network-status-badge.offline {
-  color: #F87171;
-}
-
 .status-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background-color: #16A34A;
-  box-shadow: 0 0 6px rgba(34, 197, 94, 0.5);
+  background-color: var(--dot-resolved);
 }
 
 #network-status-badge.offline .status-dot {
-  background-color: #DC2626;
-  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+  background-color: var(--color-error);
 }
 
-/* Outage Toggle (Challenge A) */
+#network-status-badge.offline {
+  border-color: rgba(220, 38, 38, 0.3);
+  color: var(--color-error);
+}
+
+/* Outage Toggle (Technical Challenge A - Clean Monochrome) */
 .outage-toggle-wrapper {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 4px 11px;
+  gap: 0.45rem;
+  padding: 3px 9px;
   background-color: rgb(var(--g50));
   border: 1px solid rgb(var(--g200));
   border-radius: var(--radius-full);
   cursor: pointer;
   user-select: none;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgb(var(--g600));
   transition: var(--transition-fast);
 }
 
 .outage-toggle-wrapper:hover {
   border-color: rgb(var(--g300));
-  background-color: rgb(var(--g100));
+  color: rgb(var(--ink));
 }
 
 .outage-toggle-wrapper input[type="checkbox"] {
   appearance: none;
   -webkit-appearance: none;
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border: 1px solid rgb(var(--g400));
-  border-radius: 3px;
+  border-radius: 2px;
   background-color: transparent;
   cursor: pointer;
   position: relative;
@@ -386,8 +359,8 @@ html.dark #network-status-badge.offline {
 }
 
 .outage-toggle-wrapper input[type="checkbox"]:checked {
-  background-color: var(--color-error);
-  border-color: var(--color-error);
+  background-color: rgb(var(--ink));
+  border-color: rgb(var(--ink));
 }
 
 .outage-toggle-wrapper input[type="checkbox"]:checked::after {
@@ -396,24 +369,25 @@ html.dark #network-status-badge.offline {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 10px;
-  color: #FFFFFF;
+  font-size: 9px;
+  color: rgb(var(--bg));
   font-weight: 700;
 }
 
 .outage-toggle-label {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: rgb(var(--g600));
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
 }
 
 .outage-toggle-wrapper.active {
-  border-color: rgba(239, 68, 68, 0.35);
-  background-color: var(--color-error-bg);
+  border-color: var(--color-error);
+  color: var(--color-error);
 }
 
-.outage-toggle-wrapper.active .outage-toggle-label {
-  color: var(--color-error);
+.outage-toggle-wrapper.active input[type="checkbox"] {
+  background-color: var(--color-error);
+  border-color: var(--color-error);
 }
 
 /* --------------------------------------------------------------------------
@@ -423,10 +397,10 @@ html.dark #network-status-badge.offline {
   position: relative;
   z-index: 1;
   flex: 1;
-  max-width: 1440px;
+  max-width: 1400px;
   width: 100%;
   margin: 0 auto;
-  padding: 1.75rem 1.5rem 3rem 1.5rem;
+  padding: 1.5rem 1.5rem 3rem 1.5rem;
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.75rem;
@@ -435,7 +409,7 @@ html.dark #network-status-badge.offline {
 
 @media (min-width: 1024px) {
   .main-workspace {
-    grid-template-columns: 440px 1fr;
+    grid-template-columns: 420px 1fr;
     gap: 2rem;
   }
 }
@@ -447,7 +421,7 @@ html.dark #network-status-badge.offline {
 @media (min-width: 1024px) {
   .left-column {
     position: sticky;
-    top: 84px;
+    top: 78px;
   }
 }
 
@@ -463,8 +437,8 @@ html.dark #network-status-badge.offline {
    6. Utilities & Scrollbars
    -------------------------------------------------------------------------- */
 ::-webkit-scrollbar {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
