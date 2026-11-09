@@ -1,16 +1,16 @@
 /**
  * ============================================================================
- * INTERACTIVE HALFTONE CANVAS ENGINE
+ * INTERACTIVE HALFTONE CANVAS ENGINE (Google Stitch Style)
  * ============================================================================
- * High-performance, physics-based reactive dot field inspired by bryllim.com.
+ * Clean, subtle, compact dot grid glow inspired by Google Stitch (stitch.withgoogle.com).
  *
- * Capabilities:
- * - Responsive 2D particle grid reacting to cursor proximity
- * - Spring-damper displacement physics (Hooke's law)
- * - Trailing bloom/glow effect fading out over brief 1.5 - 2s window
- * - Theme-reactive (automatic palette switching between light and dark modes)
- * - Ultra-efficient: pauses requestAnimationFrame when idle (0% CPU/GPU overhead)
- * - High-DPI Retina display sharpness using window.devicePixelRatio
+ * Characteristics:
+ * - Fixed grid geometry: dots stay anchored (glow only, zero chaotic displacement)
+ * - Compact hover radius (~55px) illuminating only the immediate cluster beneath pointer
+ * - Subtle, controlled luminescence (max ~0.40 alpha in dark, ~0.30 in light)
+ * - Microscopic expansion (0.9px to 1.25px max, zero giant bloom halos)
+ * - Crisp ~0.6s smooth decay for an understated, elegant feel
+ * - Complete idle hibernation (0% CPU/GPU overhead when pointer is stationary)
  * ============================================================================
  */
 
@@ -25,14 +25,11 @@ export class InteractiveHalftone {
     this.ctx = this.canvas.getContext('2d', { alpha: true });
     this.dots = [];
 
-    // Configuration parameters
-    this.spacing = 20;            // Grid dot spacing in CSS pixels
-    this.baseRadius = 0.95;       // Resting dot radius
-    this.hoverRadius = 110;       // Interaction cursor radius
-    this.maxPush = 7;             // Max elastic displacement in pixels
-    this.springK = 0.07;          // Spring return stiffness
-    this.damping = 0.82;          // Velocity damping factor
-    this.glowDecay = 0.945;       // Smooth glow decay factor (~1.8s half-life)
+    // Configuration parameters (Google Stitch style: subtle, compact, glow-only)
+    this.spacing = 22;            // Grid dot spacing in CSS pixels
+    this.baseRadius = 0.9;        // Resting dot radius
+    this.hoverRadius = 55;        // Compact interaction radius (Google Stitch style)
+    this.glowDecay = 0.88;        // Clean, quick fade (~0.6s)
 
     // Cursor state
     this.pointer = { x: -9999, y: -9999, active: false };
@@ -86,10 +83,6 @@ export class InteractiveHalftone {
         this.dots.push({
           baseX: bx,
           baseY: by,
-          x: bx,
-          y: by,
-          vx: 0,
-          vy: 0,
           glow: 0
         });
       }
@@ -168,49 +161,35 @@ export class InteractiveHalftone {
     const py = this.pointer.y;
     const hRadiusSq = this.hoverRadius * this.hoverRadius;
 
-    // Palette tokens based on theme
+    // Palette tokens (Google Stitch style subtle contrast)
     const dotR = isDark ? 245 : 12;
     const dotG = isDark ? 245 : 12;
     const dotB = isDark ? 250 : 12;
-    const baseAlpha = isDark ? 0.09 : 0.075;
-    const maxGlowAlpha = isDark ? 0.85 : 0.7;
+    const baseAlpha = isDark ? 0.075 : 0.065;
+    const maxGlowAlpha = isDark ? 0.40 : 0.30;
 
     this.ctx.clearRect(0, 0, this.width, this.height);
 
     for (let i = 0; i < this.dots.length; i++) {
       const d = this.dots[i];
 
-      // 1. Pointer interaction (Displacement + Glow excitation)
+      // 1. Pointer proximity (Glow excitation only - Google Stitch style)
       if (this.pointer.active) {
-        const dx = d.x - px;
-        const dy = d.y - py;
+        const dx = d.baseX - px;
+        const dy = d.baseY - py;
         const distSq = dx * dx + dy * dy;
 
         if (distSq < hRadiusSq) {
           const dist = Math.sqrt(distSq);
           const ratio = 1 - dist / this.hoverRadius;
-          const force = ratio * ratio * this.maxPush;
-          const angle = Math.atan2(dy, dx);
+          const intensity = ratio * ratio; // quadratic bell curve for soft falloff
 
-          // Push dot away elastically
-          d.vx += Math.cos(angle) * force * 0.35;
-          d.vy += Math.sin(angle) * force * 0.35;
-
-          // Excite glow
-          d.glow = Math.max(d.glow, Math.min(1.0, d.glow + ratio * 0.85));
+          d.glow = Math.max(d.glow, intensity);
           hasActivity = true;
         }
       }
 
-      // 2. Spring-damper physics return to origin
-      const ax = (d.baseX - d.x) * this.springK;
-      const ay = (d.baseY - d.y) * this.springK;
-      d.vx = (d.vx + ax) * this.damping;
-      d.vy = (d.vy + ay) * this.damping;
-      d.x += d.vx;
-      d.y += d.vy;
-
-      // 3. Glow decay over time
+      // 2. Smooth glow decay over time
       if (d.glow > 0.005) {
         d.glow *= this.glowDecay;
         hasActivity = true;
@@ -218,31 +197,17 @@ export class InteractiveHalftone {
         d.glow = 0;
       }
 
-      if (Math.abs(d.vx) > 0.015 || Math.abs(d.vy) > 0.015) {
-        hasActivity = true;
-      }
-
-      // 4. Render dot
-      const currentRadius = this.baseRadius + d.glow * 1.6;
+      // 3. Render dot (Subtle, crisp, minimal expansion - NO giant halos)
+      const currentRadius = this.baseRadius + d.glow * 0.35;
       const alpha = baseAlpha + d.glow * (maxGlowAlpha - baseAlpha);
 
       this.ctx.beginPath();
-      this.ctx.arc(d.x, d.y, currentRadius, 0, Math.PI * 2);
+      this.ctx.arc(d.baseX, d.baseY, currentRadius, 0, Math.PI * 2);
       this.ctx.fillStyle = `rgba(${dotR}, ${dotG}, ${dotB}, ${alpha.toFixed(3)})`;
       this.ctx.fill();
-
-      // 5. Soft optical bloom halo for excited dots
-      if (d.glow > 0.25) {
-        const haloRadius = currentRadius + d.glow * 4.5;
-        const haloAlpha = d.glow * (isDark ? 0.22 : 0.12);
-        this.ctx.beginPath();
-        this.ctx.arc(d.x, d.y, haloRadius, 0, Math.PI * 2);
-        this.ctx.fillStyle = `rgba(${dotR}, ${dotG}, ${dotB}, ${haloAlpha.toFixed(3)})`;
-        this.ctx.fill();
-      }
     }
 
-    // Hibernate if settled to preserve resources
+    // Hibernate if settled to preserve battery/GPU
     if (!hasActivity && !this.pointer.active) {
       this.isSleeping = true;
       this.rafId = null;
