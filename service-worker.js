@@ -5,7 +5,7 @@
  * cache version management, and network fallback.
  */
 
-const CACHE_NAME = 'ctu-smartdesk-v26';
+const CACHE_NAME = 'ctu-smartdesk-v27';
 
 // Pre-cached core assets for 100% offline functionality
 const PRECACHE_ASSETS = [
@@ -32,7 +32,6 @@ const PRECACHE_ASSETS = [
   './assets/icons/apple-touch-icon.png',
   './favicon.ico',
   './assets/sounds/typewriter.mp3',
-  './assets/sounds/minecraft_click.mp3',
   './assets/sounds/click_pen.mp3',
   './assets/sounds/scribblenauts.mp3',
   './assets/sounds/switch_notification.mp3',

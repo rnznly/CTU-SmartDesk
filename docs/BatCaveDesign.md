@@ -337,7 +337,7 @@ Auditory cues provide instant tactile confirmation for keyboard and mouse intera
 â”‚ 503 Server Outage Toggle        â”‚ Nintendo Switch Notification Sound â”‚
 â”‚ Dropdown Trigger / Filter Click â”‚ Retractable Ballpoint Pen Click    â”‚
 â”‚ Card Hover / Choice Hover       â”‚ Mechanical Typewriter Tick         â”‚
-â”‚ General Utility Click           â”‚ Minecraft Wooden Click             â”‚
+│ General Utility Click           │ Retractable Ballpoint Pen Click    │
 â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
 ```
 
