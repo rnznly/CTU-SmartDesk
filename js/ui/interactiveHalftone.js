@@ -22,10 +22,13 @@ export class InteractiveHalftone {
     this.ctx = this.canvas.getContext('2d', { alpha: true });
     this.dots = [];
 
-    // Configuration parameters (Google Stitch Home specification - 50% scale)
-    this.spacing = 15;            // Grid spacing for dots (50% scaled down from 30px)
+    // Configuration parameters (Google Stitch Home specification - 50% scale grid, +25% reactivity)
+    this.spacing = 15;            // Grid spacing for dots (50% scale)
     this.dotRadiusBase = 0.75;    // Base resting radius (crisp 1.5px diameter)
-    this.mouseRadius = 110;       // Interaction/ripple radius (50% scaled)
+    this.mouseRadius = 138;       // Interaction/ripple radius (+25% reactivity scale from 110px)
+    this.repulsionStrength = 17.5;// Physical pointer repulsion amplitude (+25% from 14px)
+    this.reactiveGrowth = 0.94;   // Dynamic dot expansion under cursor (+25% from 0.75px)
+    this.reactiveLuminescence = 0.69; // Alpha proximity boost (+25% from 0.55)
 
     // Mouse tracking state
     this.mouse = {
@@ -205,9 +208,9 @@ export class InteractiveHalftone {
           proximityForce = force * force; // Quadratic bell curve for smooth indentation
 
           const angle = Math.atan2(dy, dx);
-          // Gently push dots away to form an organic interactive ripple indentation
-          targetX -= Math.cos(angle) * force * 14;
-          targetY -= Math.sin(angle) * force * 14;
+          // Gently push dots away to form an organic interactive ripple indentation (+25% scale)
+          targetX -= Math.cos(angle) * force * this.repulsionStrength;
+          targetY -= Math.sin(angle) * force * this.repulsionStrength;
         }
       }
 
@@ -215,14 +218,14 @@ export class InteractiveHalftone {
       dot.x += (targetX - dot.x) * 0.12;
       dot.y += (targetY - dot.y) * 0.12;
 
-      // 4. Dot size & luminescence (50% scale)
-      const dotSize = this.dotRadiusBase + proximityForce * 0.75;
+      // 4. Dot size & luminescence (+25% reactivity scale)
+      const dotSize = this.dotRadiusBase + proximityForce * this.reactiveGrowth;
       const waveShimmer = Math.sin(this.time * 1.4 + dot.originX * 0.018) * 0.08;
       const alpha = Math.min(
         1,
         Math.max(
           0.12,
-          dot.baseAlpha + waveShimmer + proximityForce * 0.55
+          dot.baseAlpha + waveShimmer + proximityForce * this.reactiveLuminescence
         )
       );
 

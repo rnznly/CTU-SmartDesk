@@ -1,4 +1,4 @@
-﻿---
+---
 version: alpha
 name: BatCaveDesign
 description: "A dark-canvas engineering and campus operations design system anchored in the deepest obsidian void (#08090a / #010102), paired with the official Cebu Technological University monochrome seal, dignified CTU Maroon (#7B1113 / #800000) micro-accent notches, and Google Stitch Home's signature violet/lavender (#a78bfa / #5e6ad2) dynamic luminescence. Features an organic undulating spatial wave canvas with physical pointer repulsion (elastic spring physics), a four-step surface ladder framed by 1px hairline borders (#23252a to #34343a), Geist Pixel display typography, non-stacking floating pill toasts with glowing status dots, and tactile multi-channel auditory feedback."
@@ -196,7 +196,7 @@ components:
     spacing: "{spacing.grid}"
     baseDotColor: "{colors.halftone-dot}"
     illuminatedDotColor: "{colors.halftone-glow}"
-    mouseRepulsionRadius: 110
+    mouseRepulsionRadius: 138
     waveSpeed: 0.024
 ---
 
@@ -278,8 +278,8 @@ A secondary wave shimmer modulates baseline luminescence:
 $$\alpha_{\text{shimmer}} = \sin(\text{time} \times 1.4 + \text{originX} \times 0.018) \times 0.08$$
 
 ### 3.2 Elastic Cursor Repulsion & Ripple Indentation
-When the pointer enters the viewport, dots within a **160px interaction radius** are dynamically pushed away along their angle of incidence, mimicking a finger depressing an elastic rubber membrane:
-$$\Delta X = -\cos(\theta) \times \text{force} \times 28\text{px},\quad \Delta Y = -\sin(\theta) \times \text{force} \times 28\text{px}$$
+When the pointer enters the viewport, dots within a **138px interaction radius** (+25% reactivity scale) are dynamically pushed away along their angle of incidence, mimicking a finger depressing an elastic rubber membrane:
+$$\Delta X = -\cos(\theta) \times \text{force} \times 17.5\text{px},\quad \Delta Y = -\sin(\theta) \times \text{force} \times 17.5\text{px}$$
 $$\text{where } \text{force} = 1 - \frac{\text{distance}}{\text{radius}}$$
 
 ### 3.3 Spring Damping & Return Physics
@@ -288,8 +288,8 @@ $$\text{dot.x} \mathrel{+}= (\text{targetX} - \text{dot.x}) \times 0.12$$
 $$\text{dot.y} \mathrel{+}= (\text{targetY} - \text{dot.y}) \times 0.12$$
 
 ### 3.4 Dynamic Proximity Luminance
-- **Resting Dot:** $1.35\text{px}$ radius, $\alpha = 0.22 \sim 0.30$, rendered in Stitch Violet (`rgba(167, 139, 250, alpha)`).
-- **Peak Cursor Indentation:** Scales up to $2.85\text{px}$ radius, $\alpha = 0.85$, shifting into pearlescent illuminated lavender (`rgba(196, 181, 253, alpha)`).
+- **Resting Dot:** $0.75\text{px}$ radius, $\alpha = 0.22 \sim 0.30$, rendered in Stitch Violet (`rgba(167, 139, 250, alpha)`).
+- **Peak Cursor Indentation:** Dynamically expands up to $1.69\text{px}$ radius ($0.75\text{px} + 0.94\text{px}$ growth), $\alpha \rightarrow 0.85 \sim 1.0$, shifting into pearlescent illuminated lavender (`rgba(196, 181, 253, alpha)`).
 
 ---
 
