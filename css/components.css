@@ -351,21 +351,20 @@ textarea.form-control {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Submit CTA Button (Clean Solid Monochrome - bryllim.com button style) */
+/* Submit CTA Button (Clean Solid Monochrome - bryllim.com pixel font style) */
 #btn-submit-request {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
   width: 100%;
-  min-height: 40px;
+  min-height: 42px;
   padding: 0.5625rem 1.125rem;
   background-color: rgb(var(--ink));
   border: 1px solid rgb(var(--ink));
   border-radius: var(--radius-md);
-  font-family: var(--font-sans);
-  font-size: 0.8125rem;
-  font-weight: 500;
+  font-family: var(--font-pixel);
+  font-size: 0.9375rem;
+  letter-spacing: 0.04em;
   color: rgb(var(--bg));
   cursor: pointer;
   transition: opacity var(--transition-fast), transform var(--transition-fast);
