@@ -10,14 +10,18 @@
  *    - Hover on containers (.surface-card, .request-card, #app-header, .metrics-strip)
  *    - Hover on nav buttons (#filter-container button: All, Pending, In Progress, Resolved)
  *    - Hover on dropdown choices (.custom-select-option)
- * 3. Click Pen Sound (click_pen.mp3):
+ * 3. Scribblenauts Key Press Sound (scribblenauts.mp3):
+ *    - Click #btn-sample-fill (Auto-fill sample ticket)
+ * 4. Nintendo Switch Click Sound (nintendo_switch.mp3):
+ *    - Click #toggle-server-failure / #outage-wrapper (Simulate 503 Outage switch)
+ * 5. Click Pen Sound (click_pen.mp3):
  *    - Click nav filter buttons (All, Pending, In Progress, Resolved)
  *    - Click status action buttons (Start in progress, Mark as resolved, Re-open (Pending))
  *    - Click theme mode option buttons (.theme-opt)
  *    - Click textfields (input[type="text"], textarea, #search-input, etc.)
  *    - Click concern category dropdown trigger & choices (.custom-select-trigger, .custom-select-option, #concern-type)
- * 4. Minecraft Click Sound (minecraft_click.mp3):
- *    - Click any other buttons/controls (theme options, outage toggle, copy ID, auto-fill, search clear)
+ * 6. Minecraft Click Sound (minecraft_click.mp3):
+ *    - Click any other buttons/controls (copy ID, clear search, reset filters)
  * ============================================================================
  */
 
@@ -26,6 +30,7 @@ class SoundService {
     this.ctx = null;
     this.enabled = true;
     this.lastHoverTime = 0;
+    this.lastOutageSoundTime = 0;
     this.hoverThrottleMs = 75; // Throttles rapid hover triggers
     this.storageKey = 'smartdesk_sounds_enabled';
 
@@ -33,13 +38,17 @@ class SoundService {
     this.buffers = {
       typewriter: null,
       clickPen: null,
-      minecraftClick: null
+      minecraftClick: null,
+      scribblenauts: null,
+      nintendoSwitch: null
     };
 
     this.soundPaths = {
       typewriter: './assets/sounds/typewriter.mp3',
       clickPen: './assets/sounds/click_pen.mp3',
-      minecraftClick: './assets/sounds/minecraft_click.mp3'
+      minecraftClick: './assets/sounds/minecraft_click.mp3',
+      scribblenauts: './assets/sounds/scribblenauts.mp3',
+      nintendoSwitch: './assets/sounds/nintendo_switch.mp3'
     };
   }
 
@@ -319,7 +328,23 @@ class SoundService {
           return;
         }
 
-        // Case B: Click Pen Sound ->
+        // Case B: Auto-fill Sample Ticket Button -> Scribblenauts Key Press
+        if (target.closest('#btn-sample-fill, .btn-sample-fill, .btn-quick-fill')) {
+          this.playScribblenauts();
+          return;
+        }
+
+        // Case C: Simulate 503 Outage Toggle Switch -> Nintendo Switch Click
+        if (target.closest('#toggle-server-failure, #outage-wrapper, .outage-toggle-wrapper')) {
+          const now = performance.now();
+          if (now - this.lastOutageSoundTime >= 200) {
+            this.lastOutageSoundTime = now;
+            this.playNintendoSwitch();
+          }
+          return;
+        }
+
+        // Case D: Click Pen Sound ->
         // 1. Nav filter buttons: All, Pending, In Progress, Resolved (#filter-container button)
         // 2. Card action buttons: Start in progress, Mark as resolved, Re-open (Pending) (.btn-status-action)
         // 3. Theme option buttons (.theme-opt)
@@ -341,9 +366,7 @@ class SoundService {
           'button',
           'a[href]',
           '.theme-opt',
-          '.outage-toggle-wrapper',
           '.btn-copy-id',
-          '.btn-quick-fill',
           '.btn-clear-search',
           '#btn-reset-filters',
           'input[type="submit"]',
@@ -364,6 +387,20 @@ class SoundService {
    */
   playTypewriter() {
     this._playAudio('typewriter', 0.4);
+  }
+
+  /**
+   * Plays the Scribblenauts key press sound on auto-fill sample click.
+   */
+  playScribblenauts() {
+    this._playAudio('scribblenauts', 0.6);
+  }
+
+  /**
+   * Plays the Nintendo Switch click sound on 503 outage toggle.
+   */
+  playNintendoSwitch() {
+    this._playAudio('nintendoSwitch', 0.6);
   }
 
   /**
