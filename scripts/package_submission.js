@@ -70,11 +70,11 @@ try {
   copyDirFiltered(path.join(projectRoot, 'js'), path.join(stagingDir, 'js'));
   copyDirFiltered(path.join(projectRoot, 'assets'), path.join(stagingDir, 'assets'), ['minecraft_click.mp3']);
 
-  // Copy docs EXCLUDING private video script
+  // Copy docs EXCLUDING private video script and internal design specs
   copyDirFiltered(
     path.join(projectRoot, 'docs'),
     path.join(stagingDir, 'docs'),
-    ['video-presentation-script.md']
+    ['video-presentation-script.md', 'BatCaveDesign.md']
   );
 
   // Use native tar archive generator built into Windows 10/11
