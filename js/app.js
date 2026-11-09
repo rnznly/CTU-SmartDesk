@@ -10,6 +10,7 @@ import { ListView } from './ui/listView.js';
 import { mockApi } from './data/mockApi.js';
 import { notificationService } from './services/notificationService.js';
 import { InteractiveHalftone } from './ui/interactiveHalftone.js';
+import { soundService } from './services/soundService.js';
 
 class App {
   constructor() {
@@ -37,8 +38,11 @@ class App {
       console.warn('[CTU SmartDesk] Interactive canvas failed to initialize:', err);
     }
 
-    // 1. Setup Theme Switcher (Bryl Lim style Light / Dark modes)
+    // 1. Setup Theme Switcher (bryllim.com 3-way System / Light / Dark modes)
     this._setupThemeSwitcher();
+
+    // 1b. Setup UI Sound Engine (Hover ticks & Apple Pay click chimes)
+    this._setupSound();
 
     // 2. Initialize Views
     this.listView = new ListView();
@@ -64,21 +68,30 @@ class App {
   }
 
   /**
-   * Theme Switcher: Bryl Lim Monochrome Light/Dark Mode Manager
+   * Theme Switcher: bryllim.com 3-Way System / Light / Dark Manager
    * @private
    */
   _setupThemeSwitcher() {
+    const systemBtn = document.getElementById('theme-system-btn');
     const lightBtn = document.getElementById('theme-light-btn');
     const darkBtn = document.getElementById('theme-dark-btn');
-    if (!lightBtn || !darkBtn) return;
 
-    const setTheme = (theme) => {
-      const isDark = theme === 'dark';
+    let currentPreference = 'system';
+
+    const applyTheme = (themeMode) => {
+      let isDark = false;
+      if (themeMode === 'system') {
+        isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      } else {
+        isDark = themeMode === 'dark';
+      }
+
       document.documentElement.classList.toggle('dark', isDark);
-      lightBtn.classList.toggle('is-active', !isDark);
-      darkBtn.classList.toggle('is-active', isDark);
 
-      // Update meta theme-color
+      if (systemBtn) systemBtn.classList.toggle('is-active', themeMode === 'system');
+      if (lightBtn) lightBtn.classList.toggle('is-active', themeMode === 'light');
+      if (darkBtn) darkBtn.classList.toggle('is-active', themeMode === 'dark');
+
       const metaThemeColor = document.querySelector('meta[name="theme-color"]');
       if (metaThemeColor) {
         metaThemeColor.setAttribute('content', isDark ? '#0c0c0f' : '#ffffff');
@@ -90,28 +103,50 @@ class App {
 
       try {
         if (typeof localStorage !== 'undefined') {
-          localStorage.setItem('smartdesk_theme', theme);
+          localStorage.setItem('smartdesk_theme', themeMode);
         }
       } catch {}
     };
 
-    // Load saved or system theme preference
-    let preferredTheme = 'light';
+    // Load saved preference
     try {
       if (typeof localStorage !== 'undefined') {
         const saved = localStorage.getItem('smartdesk_theme');
-        if (saved) {
-          preferredTheme = saved;
-        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          preferredTheme = 'dark';
+        if (saved && ['system', 'light', 'dark'].includes(saved)) {
+          currentPreference = saved;
         }
       }
     } catch {}
 
-    setTheme(preferredTheme);
+    applyTheme(currentPreference);
 
-    lightBtn.addEventListener('click', () => setTheme('light'));
-    darkBtn.addEventListener('click', () => setTheme('dark'));
+    if (systemBtn) systemBtn.addEventListener('click', () => { currentPreference = 'system'; applyTheme('system'); });
+    if (lightBtn) lightBtn.addEventListener('click', () => { currentPreference = 'light'; applyTheme('light'); });
+    if (darkBtn) darkBtn.addEventListener('click', () => { currentPreference = 'dark'; applyTheme('dark'); });
+
+    // Listen to OS theme changes when in system mode
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (currentPreference === 'system') {
+          applyTheme('system');
+        }
+      });
+    }
+  }
+
+  /**
+   * Sound Engine Controller
+   * Binds sound toggle button and starts audio service.
+   * @private
+   */
+  _setupSound() {
+    soundService.init();
+    const soundBtn = document.getElementById('sound-toggle-btn');
+    if (soundBtn) {
+      soundBtn.addEventListener('click', () => {
+        soundService.toggleSound();
+      });
+    }
   }
 
   /**

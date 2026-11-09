@@ -296,9 +296,48 @@ body {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
+html.dark .theme-opt.is-active {
+  background: rgb(var(--g800));
+  color: rgb(var(--ink));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
 .theme-opt svg {
   width: 12px;
   height: 12px;
+}
+
+/* Sound Toggle Button (bryllim.com circular audio button) */
+.sound-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgb(var(--g200));
+  background-color: rgb(var(--g50));
+  color: rgb(var(--g500));
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.sound-toggle-btn:hover {
+  border-color: rgb(var(--g300));
+  color: rgb(var(--ink));
+}
+
+.sound-toggle-btn.is-active,
+.sound-toggle-btn[aria-pressed="true"] {
+  color: rgb(var(--ink));
+  background-color: rgb(var(--g100));
+}
+
+.sound-toggle-btn svg {
+  width: 13px;
+  height: 13px;
 }
 
 /* Network Status Badge (Clean Mono Pill) */
