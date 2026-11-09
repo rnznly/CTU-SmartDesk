@@ -17,18 +17,20 @@ const zipPath = path.join(projectRoot, zipName);
 
 console.log(`[Packaging] Generating ${zipName}...`);
 
-// Use PowerShell Compress-Archive
-const psCommand = `powershell -Command "
-  if (Test-Path '${zipPath}') { Remove-Item '${zipPath}' -Force }
-  Compress-Archive -Path '${projectRoot}\\index.html', '${projectRoot}\\manifest.json', '${projectRoot}\\service-worker.js', '${projectRoot}\\css', '${projectRoot}\\js', '${projectRoot}\\assets', '${projectRoot}\\docs', '${projectRoot}\\README.md' -DestinationPath '${zipPath}'
-"`;
-
 try {
-  execSync(psCommand, { stdio: 'inherit' });
+  if (fs.existsSync(zipPath)) {
+    fs.unlinkSync(zipPath);
+  }
+
+  // Use native tar archive generator (built into Windows 10/11)
+  const cmd = 'tar -a -c -f MIDTERM_SURNAME_FIRSTNAME.zip index.html favicon.ico manifest.json service-worker.js css js assets docs README.md';
+  execSync(cmd, { cwd: projectRoot, stdio: 'inherit' });
+
   if (fs.existsSync(zipPath)) {
     const stats = fs.statSync(zipPath);
     console.log(`✓ [SUCCESS] Created ${zipName} (${(stats.size / 1024).toFixed(1)} KB)`);
   }
 } catch (err) {
   console.error('Packaging error:', err);
+  process.exit(1);
 }
