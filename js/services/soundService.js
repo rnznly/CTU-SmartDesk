@@ -1,14 +1,19 @@
 /**
  * ============================================================================
- * INTERFACE SOUND SERVICE (Typewriter Hover & Minecraft Click / Apple Pay)
+ * INTERFACE SOUND SERVICE (Custom Multi-Sound Experience)
  * ============================================================================
- * High-performance audio engine with Web Audio API buffer playback and fallback.
- *
- * Mappings:
- * - Hover over elements -> Typewriter mechanical key sound (MyInstants typewriter-15339)
- * - Click #btn-submit-request -> Apple Pay ascending two-tone chime
- * - Click #sound-toggle-btn -> Mute/unmute toggle state (no minecraft sound)
- * - Click any other button/interactive element -> Minecraft click (MyInstants minecraft-click)
+ * Audio rules:
+ * 1. Apple Pay Ascending Chime:
+ *    - Click #sound-toggle-btn (Sound On/Off button)
+ *    - Click #btn-submit-request (Submit Service Request button)
+ * 2. Typewriter Key Sound (typewriter.mp3):
+ *    - Hover on containers (.surface-card, .request-card, #app-header, .metrics-strip)
+ *    - Hover on nav buttons (#filter-container button: All, Pending, In Progress, Resolved)
+ * 3. Click Pen Sound (click_pen.mp3):
+ *    - Click nav filter buttons (All, Pending, In Progress, Resolved)
+ *    - Click status action buttons (Start in progress, Mark as resolved, Re-open (Pending))
+ * 4. Minecraft Click Sound (minecraft_click.mp3):
+ *    - Click any other buttons/controls (theme options, outage toggle, copy ID, auto-fill, search clear)
  * ============================================================================
  */
 
@@ -17,17 +22,19 @@ class SoundService {
     this.ctx = null;
     this.enabled = true;
     this.lastHoverTime = 0;
-    this.hoverThrottleMs = 65; // Throttles rapid mouse sweeps
+    this.hoverThrottleMs = 75; // Throttles rapid hover triggers
     this.storageKey = 'smartdesk_sounds_enabled';
 
     // AudioBuffers cache
     this.buffers = {
       typewriter: null,
+      clickPen: null,
       minecraftClick: null
     };
 
     this.soundPaths = {
       typewriter: './assets/sounds/typewriter.mp3',
+      clickPen: './assets/sounds/click_pen.mp3',
       minecraftClick: './assets/sounds/minecraft_click.mp3'
     };
   }
@@ -105,6 +112,7 @@ class SoundService {
 
     await Promise.all([
       loadSound('typewriter', this.soundPaths.typewriter),
+      loadSound('clickPen', this.soundPaths.clickPen),
       loadSound('minecraftClick', this.soundPaths.minecraftClick)
     ]);
   }
@@ -144,10 +152,13 @@ class SoundService {
 
   /**
    * Toggles sound on/off and returns new state.
+   * Triggers Apple Pay sound when clicked.
    * @returns {boolean}
    */
   toggleSound() {
+    const wasEnabled = this.enabled;
     this.enabled = !this.enabled;
+
     try {
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem(this.storageKey, String(this.enabled));
@@ -156,9 +167,14 @@ class SoundService {
 
     this._updateToggleButtonUI();
 
-    // Subtle audio confirmation when turning sound ON
+    // Apple Pay sound plays when sound button is clicked (if turned ON or as feedback)
     if (this.enabled) {
-      this.playMinecraftClick();
+      this.playApplePay();
+    } else if (wasEnabled) {
+      // Temporarily enable context to play the farewell chime then mute
+      this.enabled = true;
+      this.playApplePay();
+      this.enabled = false;
     }
 
     return this.enabled;
@@ -223,33 +239,23 @@ class SoundService {
   }
 
   /**
-   * Binds pointerenter hover (typewriter) and click triggers (minecraft click / Apple Pay).
+   * Binds pointerenter hover (typewriter) and click triggers (Apple Pay / Click Pen / Minecraft).
    * @private
    */
   _bindUiSoundTriggers() {
     if (typeof document === 'undefined') return;
 
-    // Selector targeting elements for hover typewriter sound
-    const hoverElementsSelector = [
-      'a[href]',
-      'button',
-      'input:not([type="hidden"])',
-      'textarea',
-      'select',
-      '.theme-opt',
-      '.sound-toggle-btn',
-      '.outage-toggle-wrapper',
-      '.btn-status-action',
-      '.btn-copy-id',
-      '.btn-quick-fill',
-      '.metric-chip',
+    // Selector targeting containers and nav buttons for typewriter hover sound
+    const hoverTypewriterSelector = [
+      '.surface-card',
       '.request-card',
-      '.status-badge',
-      '[role="button"]',
-      'label'
+      '#app-header',
+      '.metrics-strip',
+      '#filter-container button',
+      '.filter-bar-row button'
     ].join(',');
 
-    // 1. Element Hover: Typewriter Sound
+    // 1. Element Hover: Typewriter Sound (containers & nav buttons)
     document.addEventListener(
       'pointerenter',
       (e) => {
@@ -257,7 +263,7 @@ class SoundService {
         const target = e.target;
         if (!(target instanceof Element)) return;
 
-        const matched = target.closest(hoverElementsSelector);
+        const matched = target.closest(hoverTypewriterSelector);
         if (matched) {
           const now = performance.now();
           if (now - this.lastHoverTime >= this.hoverThrottleMs) {
@@ -270,9 +276,6 @@ class SoundService {
     );
 
     // 2. Click Handler:
-    // - Submit Service Request (#btn-submit-request) -> Apple Pay ascending chime
-    // - Sound toggle button (#sound-toggle-btn) -> Skipped (managed separately in toggleSound)
-    // - Any other element/button -> Minecraft Click
     document.addEventListener(
       'click',
       (e) => {
@@ -280,7 +283,7 @@ class SoundService {
         const target = e.target;
         if (!(target instanceof Element)) return;
 
-        // Skip sound toggle button (handled explicitly by toggleSound())
+        // Skip sound toggle button here (toggleSound() handles its own Apple Pay feedback)
         if (target.closest('#sound-toggle-btn')) {
           return;
         }
@@ -291,13 +294,23 @@ class SoundService {
           return;
         }
 
-        // Case B: Any other clickable element or button -> Minecraft Click
-        const clickable = target.closest([
+        // Case B: Click Pen Sound ->
+        // Nav filter buttons: All, Pending, In Progress, Resolved (#filter-container button)
+        // Card action buttons: Start in progress, Mark as resolved, Re-open (Pending) (.btn-status-action)
+        const isNavFilterBtn = target.closest('#filter-container button, .filter-bar-row button');
+        const isStatusActionBtn = target.closest('.btn-status-action');
+
+        if (isNavFilterBtn || isStatusActionBtn) {
+          this.playClickPen();
+          return;
+        }
+
+        // Case C: Minecraft Click -> Any other clickable buttons/controls
+        const generalClickable = target.closest([
           'button',
           'a[href]',
           '.theme-opt',
           '.outage-toggle-wrapper',
-          '.btn-status-action',
           '.btn-copy-id',
           '.btn-quick-fill',
           '.btn-clear-search',
@@ -307,7 +320,7 @@ class SoundService {
           '[role="button"]'
         ].join(','));
 
-        if (clickable && !clickable.hasAttribute('disabled')) {
+        if (generalClickable && !generalClickable.hasAttribute('disabled')) {
           this.playMinecraftClick();
         }
       },
@@ -316,10 +329,17 @@ class SoundService {
   }
 
   /**
-   * Plays the Typewriter sound on element hover.
+   * Plays the Typewriter sound on container & nav button hovers.
    */
   playTypewriter() {
     this._playAudio('typewriter', 0.4);
+  }
+
+  /**
+   * Plays the Click Pen sound on nav filter & status action button clicks.
+   */
+  playClickPen() {
+    this._playAudio('clickPen', 0.55);
   }
 
   /**
@@ -331,10 +351,9 @@ class SoundService {
 
   /**
    * Plays the Apple Pay two-tone ascending chime (C6 -> G6)
-   * specifically for #btn-submit-request.
+   * used exclusively for #sound-toggle-btn and #btn-submit-request.
    */
   playApplePay() {
-    if (!this.enabled) return;
     const ctx = this._getAudioContext();
     if (!ctx) return;
 
