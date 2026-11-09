@@ -1,42 +1,60 @@
 /**
  * @file storageService.js
- * @description LocalStorage Repository Gateway.
- * Manages raw JSON persistence, serialization, quota protection,
- * and initial demo seed data.
+ * @description Data Access Layer: LocalStorage Wrapper.
+ * Provides pre-seeded campus records and standard CRUD operations.
  */
 
-import { STORAGE_KEYS, REQUEST_STATUS, CONCERN_TYPES } from '../config/constants.js';
+import { STORAGE_KEYS, REQUEST_STATUS } from '../config/constants.js';
+
+// Environment-safe storage helper (browser localStorage + Node in-memory fallback)
+const memStorage = new Map();
+const isBrowserStorage = typeof localStorage !== 'undefined';
+const store = {
+  getItem: (key) => (isBrowserStorage ? localStorage.getItem(key) : (memStorage.get(key) || null)),
+  setItem: (key, val) => (isBrowserStorage ? localStorage.setItem(key, String(val)) : memStorage.set(key, String(val))),
+  removeItem: (key) => (isBrowserStorage ? localStorage.removeItem(key) : memStorage.delete(key)),
+  clear: () => (isBrowserStorage ? localStorage.clear() : memStorage.clear())
+};
 
 /**
- * Initial Seed Data for Demo & Evaluation
- * Provides ready-to-test data on initial load.
+ * Pre-seeded realistic CTU campus service request records.
  */
 const SEED_REQUESTS = [
   {
-    id: 'CTU-REQ-20261109-01A1',
-    studentName: 'Juan Dela Cruz',
-    concernType: CONCERN_TYPES[0], // Classroom Equipment
-    description: 'Classroom 304 projector lamp is flickering intermittently and shuts off after 10 minutes of lecture.',
-    dateSubmitted: new Date(Date.now() - 3600000 * 5).toISOString(),
-    formattedDate: 'Today, 04:30 AM',
+    id: 'CTU-REQ-20261109-8F2B01',
+    studentName: 'Maria Clara Santos (BSCE 4-A)',
+    concernType: 'Classroom Equipment',
+    description: 'Room EN-302 (Engineering Bldg): Wall-mounted 65" Smart TV does not detect HDMI input from the lectern laptop during CAD lecture.',
+    dateSubmitted: new Date(Date.now() - 3600000 * 3).toISOString(),
+    formattedDate: 'Today • 09:15 AM',
     status: REQUEST_STATUS.PENDING,
-    updatedAt: new Date(Date.now() - 3600000 * 5).toISOString()
+    updatedAt: new Date(Date.now() - 3600000 * 3).toISOString()
   },
   {
-    id: 'CTU-REQ-20261109-02B2',
-    studentName: 'Maria Santos',
-    concernType: CONCERN_TYPES[1], // Laboratory
-    description: 'Computer terminal #14 in CCIT Computer Lab 2 has no network connectivity and displays IP conflict errors.',
-    dateSubmitted: new Date(Date.now() - 3600000 * 24).toISOString(),
-    formattedDate: 'Yesterday, 09:15 AM',
+    id: 'CTU-REQ-20261109-4C9A02',
+    studentName: 'Joshua Reyes (BSIT 3-B)',
+    concernType: 'Laboratory',
+    description: 'ICT Lab 2 (Centennial Bldg 5th Flr): Cisco Catalyst switch rack port #14-18 showing amber link fault; 5 student workstations offline.',
+    dateSubmitted: new Date(Date.now() - 3600000 * 5).toISOString(),
+    formattedDate: 'Today • 08:40 AM',
     status: REQUEST_STATUS.IN_PROGRESS,
-    updatedAt: new Date(Date.now() - 3600000 * 12).toISOString()
+    updatedAt: new Date(Date.now() - 3600000 * 1).toISOString()
   },
   {
-    id: 'CTU-REQ-20261109-03C3',
-    studentName: 'Mark Reyes',
-    concernType: CONCERN_TYPES[2], // Facility Maintenance
-    description: 'Main Building 2nd floor male restroom sink faucet is continuously dripping, causing water wastage.',
+    id: 'CTU-REQ-20261108-7E1D03',
+    studentName: 'Engr. Roberto Villanueva (Faculty)',
+    concernType: 'Facility Maintenance',
+    description: 'Science Bldg Rm 104: Split-type air conditioning unit #2 is dripping condensation water onto the front demonstration table.',
+    dateSubmitted: new Date(Date.now() - 3600000 * 24).toISOString(),
+    formattedDate: 'Yesterday • 03:20 PM',
+    status: REQUEST_STATUS.PENDING,
+    updatedAt: new Date(Date.now() - 3600000 * 24).toISOString()
+  },
+  {
+    id: 'CTU-REQ-20261107-2A6F04',
+    studentName: 'Angela Mae Gomez (BSED 2-A)',
+    concernType: 'Others',
+    description: 'CTU Multi-Purpose Hall: Wireless gooseneck podium microphone #1 has intermittent static interference during departmental orientation.',
     dateSubmitted: new Date(Date.now() - 3600000 * 48).toISOString(),
     formattedDate: '2 days ago',
     status: REQUEST_STATUS.RESOLVED,
@@ -51,27 +69,27 @@ class StorageService {
   }
 
   /**
-   * Initializes local storage with seed data if currently empty.
+   * Initializes storage with seed data if currently empty.
    * @private
    */
   _initializeSeedData() {
     try {
-      const existing = localStorage.getItem(this.storageKey);
+      const existing = store.getItem(this.storageKey);
       if (!existing || JSON.parse(existing).length === 0) {
-        localStorage.setItem(this.storageKey, JSON.stringify(SEED_REQUESTS));
+        store.setItem(this.storageKey, JSON.stringify(SEED_REQUESTS));
       }
     } catch (error) {
-      console.warn('StorageService: Unable to initialize seed data in localStorage.', error);
+      console.warn('StorageService: Unable to initialize seed data in storage.', error);
     }
   }
 
   /**
-   * Retrieves all requests from local storage.
+   * Retrieves all requests from storage.
    * @returns {Array<object>}
    */
   getAll() {
     try {
-      const raw = localStorage.getItem(this.storageKey);
+      const raw = store.getItem(this.storageKey);
       return raw ? JSON.parse(raw) : [];
     } catch (error) {
       console.error('StorageService.getAll failed:', error);
@@ -109,7 +127,7 @@ class StorageService {
       all.unshift(newRequest); // Add newest to the top
     }
 
-    localStorage.setItem(this.storageKey, JSON.stringify(all));
+    store.setItem(this.storageKey, JSON.stringify(all));
     return newRequest;
   }
 
@@ -132,7 +150,7 @@ class StorageService {
     };
 
     all[index] = updated;
-    localStorage.setItem(this.storageKey, JSON.stringify(all));
+    store.setItem(this.storageKey, JSON.stringify(all));
     return updated;
   }
 
@@ -140,7 +158,7 @@ class StorageService {
    * Resets storage to original seed requests (useful for test resets).
    */
   resetToDefault() {
-    localStorage.setItem(this.storageKey, JSON.stringify(SEED_REQUESTS));
+    store.setItem(this.storageKey, JSON.stringify(SEED_REQUESTS));
     return [...SEED_REQUESTS];
   }
 }

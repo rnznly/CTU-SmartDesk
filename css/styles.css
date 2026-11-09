@@ -1,0 +1,356 @@
+/* ==========================================================================
+   CTU SmartDesk — Stylesheet
+   Theme: Linear Design System (linear.app)
+   Near-black canvas (#010102), elevated charcoal surfaces (#0F1011, #141516),
+   crisp 1px hairlines (#23252A), CTU maroon & signature lavender accents.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. CSS Custom Properties / Design Tokens
+   -------------------------------------------------------------------------- */
+:root {
+  /* Surfaces & Canvas */
+  --color-canvas:           #010102;
+  --color-surface-1:        #0F1011;
+  --color-surface-2:        #141516;
+  --color-surface-3:        #18191A;
+  --color-surface-4:        #191A1B;
+
+  /* Hairlines & Borders */
+  --color-hairline:         #23252A;
+  --color-hairline-strong:  #34343A;
+  --color-hairline-accent:  rgba(94, 106, 210, 0.35);
+
+  /* Typography / Ink Tokens */
+  --color-ink:              #F7F8F8;
+  --color-ink-muted:        #D0D6E0;
+  --color-ink-subtle:       #8A8F98;
+  --color-ink-tertiary:     #62666D;
+
+  /* Brand Accents */
+  --color-linear-lavender:  #5E6AD2;
+  --color-linear-hover:     #828FFF;
+  --color-ctu-maroon:       #7B1113;
+  --color-ctu-maroon-hover: #981417;
+  --color-ctu-gold:         #D97706;
+  --color-ctu-gold-glow:    rgba(217, 119, 6, 0.15);
+
+  /* Status Colors */
+  --color-status-pending:   #F59E0B;
+  --color-status-pending-bg: rgba(245, 158, 11, 0.12);
+  --color-status-pending-border: rgba(245, 158, 11, 0.28);
+
+  --color-status-progress:  #5E6AD2;
+  --color-status-progress-bg: rgba(94, 106, 210, 0.14);
+  --color-status-progress-border: rgba(94, 106, 210, 0.32);
+
+  --color-status-resolved:  #27A644;
+  --color-status-resolved-bg: rgba(39, 166, 68, 0.12);
+  --color-status-resolved-border: rgba(39, 166, 68, 0.28);
+
+  /* Semantic Feedback */
+  --color-error:            #EF4444;
+  --color-error-bg:         rgba(239, 68, 68, 0.1);
+  --color-error-border:     rgba(239, 68, 68, 0.3);
+
+  /* Radii */
+  --radius-sm:              4px;
+  --radius-md:              8px;
+  --radius-lg:              12px;
+  --radius-full:            9999px;
+
+  /* Typography */
+  --font-sans:              'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono:              'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Transitions */
+  --transition-fast:        0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-normal:      0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   2. Base Reset & Layout
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  line-height: 1.5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Accessible focus visible rings */
+:focus-visible {
+  outline: 2px solid var(--color-linear-lavender);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Application Header (#app-header)
+   -------------------------------------------------------------------------- */
+#app-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background-color: rgba(15, 16, 17, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-hairline);
+  padding: 0 1.5rem;
+}
+
+.header-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* Brand Identity */
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  text-decoration: none;
+}
+
+.ctu-crest {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--color-ctu-maroon) 0%, #450A0B 100%);
+  border: 1px solid rgba(217, 119, 6, 0.4);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #FBBF24;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 12px rgba(123, 17, 19, 0.4);
+  flex-shrink: 0;
+}
+
+.brand-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  letter-spacing: -0.015em;
+}
+
+.brand-campus-tag {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  background-color: rgba(94, 106, 210, 0.15);
+  border: 1px solid rgba(94, 106, 210, 0.3);
+  color: #A5B4FC;
+  letter-spacing: 0.02em;
+}
+
+.brand-subtitle {
+  font-size: 0.75rem;
+  color: var(--color-ink-subtle);
+  letter-spacing: -0.005em;
+}
+
+/* System Controls (Network badge + 503 Outage Toggle) */
+.system-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+#network-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background-color: rgba(39, 166, 68, 0.1);
+  border: 1px solid rgba(39, 166, 68, 0.25);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #4ADE80;
+  transition: var(--transition-normal);
+}
+
+#network-status-badge.offline {
+  background-color: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #F87171;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #22C55E;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+}
+
+#network-status-badge.offline .status-dot {
+  background-color: #EF4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+/* Outage Toggle (Technical Challenge A) */
+.outage-toggle-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 5px 12px;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition-fast);
+}
+
+.outage-toggle-wrapper:hover {
+  border-color: var(--color-hairline-strong);
+  background-color: var(--color-surface-3);
+}
+
+.outage-toggle-wrapper input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--color-ink-tertiary);
+  border-radius: 3px;
+  background-color: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition-fast);
+}
+
+.outage-toggle-wrapper input[type="checkbox"]:checked {
+  background-color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.outage-toggle-wrapper input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 10px;
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.outage-toggle-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-ink-muted);
+}
+
+.outage-toggle-wrapper.active {
+  border-color: rgba(239, 68, 68, 0.4);
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.outage-toggle-wrapper.active .outage-toggle-label {
+  color: #FCA5A5;
+}
+
+/* --------------------------------------------------------------------------
+   4. Main Dual-Column Split Workspace
+   -------------------------------------------------------------------------- */
+.main-workspace {
+  flex: 1;
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.75rem 1.5rem 3rem 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .main-workspace {
+    grid-template-columns: 440px 1fr;
+    gap: 2rem;
+  }
+}
+
+/* Left Column: Sticky Form Container */
+.left-column {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .left-column {
+    position: sticky;
+    top: 84px;
+  }
+}
+
+/* Right Column: Feed and Controls */
+.right-column {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0; /* Prevents flex overflow */
+}
+
+/* --------------------------------------------------------------------------
+   5. Utilities & Scrollbars
+   -------------------------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-canvas);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-hairline-strong);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-tertiary);
+}

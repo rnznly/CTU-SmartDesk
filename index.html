@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CTU SmartDesk — Campus Service Request System</title>
+  <meta name="description" content="Offline-first Progressive Web Application for managing campus equipment, laboratory, and facility service requests at Cebu Technological University." />
+  <meta name="theme-color" content="#010102" />
+
+  <!-- PWA Manifest & App Icons -->
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon-192.png" />
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheets (Linear Design System) -->
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+  <!-- ========================================================================
+       APPLICATION HEADER (#app-header)
+       ======================================================================== -->
+  <header id="app-header">
+    <div class="header-inner">
+      <!-- Left: CTU Brand Crest & Subtitle -->
+      <div class="brand-group">
+        <div class="ctu-crest" aria-hidden="true">CTU</div>
+        <div class="brand-titles">
+          <div class="brand-title-row">
+            <h1 class="brand-title">CTU SmartDesk</h1>
+            <span class="brand-campus-tag">Linear UI</span>
+          </div>
+          <span class="brand-subtitle">Cebu Technological University • Campus Service Request System</span>
+        </div>
+      </div>
+
+      <!-- Right: Network Status Badge & 503 Outage Toggle -->
+      <div class="system-controls">
+        <div id="network-status-badge" role="status" aria-live="polite">
+          <span class="status-dot"></span>
+          <span id="network-status-text">Online</span>
+        </div>
+
+        <label class="outage-toggle-wrapper" id="outage-wrapper" for="toggle-server-failure" title="Toggle simulated 503 HTTP Server Outage">
+          <input type="checkbox" id="toggle-server-failure" aria-label="Simulate 503 Outage" />
+          <span class="outage-toggle-label">Simulate 503 Outage</span>
+        </label>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MAIN DUAL-COLUMN WORKSPACE
+       ======================================================================== -->
+  <main class="main-workspace">
+
+    <!-- LEFT COLUMN (40% Desktop Sticky): SERVICE REQUEST FORM -->
+    <aside class="left-column" aria-label="Submit a New Service Request">
+      <div class="surface-card">
+        <div class="form-card-header">
+          <div>
+            <h2 class="form-card-title">New Service Request</h2>
+            <p class="form-card-subtitle">Log a campus facility, laboratory, or equipment issue.</p>
+          </div>
+          <span class="gold-accent-pill">SLA: 24h</span>
+        </div>
+
+        <form id="service-request-form" novalidate>
+          <!-- Student Name -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label class="form-label" for="student-name">
+                Student / Faculty Name<span class="required-star">*</span>
+              </label>
+            </div>
+            <input
+              type="text"
+              id="student-name"
+              class="form-control"
+              placeholder="e.g., Juan Dela Cruz (BSIT 3-A)"
+              autocomplete="name"
+              required
+            />
+            <div id="name-error" class="field-error" role="alert">
+              Please enter the requesting student or faculty member's full name.
+            </div>
+          </div>
+
+          <!-- Concern Category -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label class="form-label" for="concern-type">
+                Concern Category<span class="required-star">*</span>
+              </label>
+            </div>
+            <div class="select-wrapper">
+              <select id="concern-type" class="form-control" required>
+                <option value="">Select category...</option>
+                <option value="Classroom Equipment">Classroom Equipment</option>
+                <option value="Laboratory">Laboratory</option>
+                <option value="Facility Maintenance">Facility Maintenance</option>
+                <option value="Others">Others</option>
+              </select>
+              <svg class="select-chevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div id="type-error" class="field-error" role="alert">
+              Please select a valid campus service category.
+            </div>
+          </div>
+
+          <!-- Problem Description -->
+          <div class="form-group">
+            <div class="form-label-row">
+              <label class="form-label" for="concern-description">
+                Location &amp; Problem Description<span class="required-star">*</span>
+              </label>
+              <span id="char-counter">0 / 10 min chars</span>
+            </div>
+            <textarea
+              id="concern-description"
+              class="form-control"
+              placeholder="Specify building, room number, and exact issue (e.g., Room EN-302 Smart TV HDMI port faulty)..."
+              required
+            ></textarea>
+            <div id="desc-error" class="field-error" role="alert">
+              Description must be at least 10 characters long for technician dispatch.
+            </div>
+          </div>
+
+          <!-- Primary Submit CTA -->
+          <button type="submit" id="btn-submit-request">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+            </svg>
+            <span>Submit Service Request</span>
+          </button>
+        </form>
+
+        <div class="form-footer-note">
+          <span>Collision-Resistant Unique ID Assignment</span>
+          <button type="button" class="btn-quick-fill" id="btn-sample-fill">Auto-fill sample</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- RIGHT COLUMN (60% Desktop): MANAGEMENT FEED & DASHBOARD -->
+    <section class="right-column" aria-label="Campus Service Requests Feed">
+
+      <!-- Sticky Filter & Metric Bar -->
+      <div class="dashboard-controls-card">
+        <div class="search-metrics-row">
+          <!-- Content Search Input -->
+          <div class="search-box-wrapper">
+            <svg class="search-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
+            </svg>
+            <input
+              type="search"
+              id="search-input"
+              placeholder="Search Request ID, student name, room, or issue..."
+              aria-label="Search service requests"
+            />
+            <button type="button" class="btn-clear-search" id="btn-clear-search" title="Clear search" aria-label="Clear search">
+              ✕
+            </button>
+          </div>
+
+          <!-- Micro Numeric Metric Chips -->
+          <div class="metrics-strip" aria-label="Ticket Statistics">
+            <div class="metric-chip">
+              <span>Total</span>
+              <span id="stats-total" class="metric-chip-value">0</span>
+            </div>
+            <div class="metric-chip pending">
+              <span>Pending</span>
+              <span id="stats-pending" class="metric-chip-value">0</span>
+            </div>
+            <div class="metric-chip resolved">
+              <span>Resolved</span>
+              <span id="stats-resolved" class="metric-chip-value">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Horizontal Pill Tabs -->
+        <div class="filter-bar-row">
+          <div id="filter-container" role="tablist" aria-label="Filter requests by status">
+            <!-- Dynamically populated or rendered from REQUEST_STATUS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- High-Scanning-Efficiency Request Cards Feed -->
+      <div id="requests-container" aria-live="polite">
+        <!-- Populated dynamically by JavaScript -->
+      </div>
+
+      <!-- Empty State Card -->
+      <div id="empty-state-view">
+        <div class="empty-icon-circle" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+        </div>
+        <h3 class="empty-title">No matching service requests</h3>
+        <p class="empty-subtitle">
+          No campus tickets matched your current search query or status filter pill.
+        </p>
+        <button type="button" class="btn-reset-filters" id="btn-reset-filters">
+          Reset Search &amp; Filters
+        </button>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ========================================================================
+       FLOATING NOTIFICATION LAYER (#toast-container)
+       ======================================================================== -->
+  <div id="toast-container" aria-live="assertive" aria-atomic="true"></div>
+
+  <!-- Master Application Bootstrap -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

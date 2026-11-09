@@ -9,11 +9,15 @@ import { storageService } from './storageService.js';
 import { createApiSuccess, createApiError } from '../contracts/apiContracts.js';
 import { HTTP_STATUS, ERROR_CODES, APP_CONFIG, STORAGE_KEYS } from '../config/constants.js';
 
+const isBrowserStorage = typeof localStorage !== 'undefined';
+
 class MockApi {
   constructor() {
     this.latencyMs = APP_CONFIG.MOCK_NETWORK_LATENCY_MS || 150;
     // Load persisted failure flag if set, or default to false
-    this.simulateFailure = localStorage.getItem(STORAGE_KEYS.FAILURE_SIMULATION) === 'true';
+    this.simulateFailure = isBrowserStorage
+      ? localStorage.getItem(STORAGE_KEYS.FAILURE_SIMULATION) === 'true'
+      : false;
   }
 
   /**
@@ -31,7 +35,9 @@ class MockApi {
    */
   setSimulateFailure(enable) {
     this.simulateFailure = Boolean(enable);
-    localStorage.setItem(STORAGE_KEYS.FAILURE_SIMULATION, String(this.simulateFailure));
+    if (isBrowserStorage) {
+      localStorage.setItem(STORAGE_KEYS.FAILURE_SIMULATION, String(this.simulateFailure));
+    }
   }
 
   /**
