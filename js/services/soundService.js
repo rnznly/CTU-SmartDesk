@@ -9,7 +9,6 @@
  * 2. Typewriter Key Sound (typewriter.mp3):
  *    - Hover on containers (.surface-card, .request-card, #app-header, .metrics-strip)
  *    - Hover on nav buttons (#filter-container button: All, Pending, In Progress, Resolved)
- *    - Hover on dropdown choices (.custom-select-option)
  * 3. Scribblenauts Key Press Sound (scribblenauts.mp3):
  *    - Click #btn-sample-fill (Auto-fill sample ticket)
  * 4. Switch Notification Sound (switch_notification.mp3):
@@ -18,8 +17,6 @@
  *    - Click nav filter buttons (All, Pending, In Progress, Resolved)
  *    - Click status action buttons (Start in progress, Mark as resolved, Re-open (Pending))
  *    - Click theme mode option buttons (.theme-opt)
- *    - Click textfields (input[type="text"], textarea, #search-input, etc.)
- *    - Click concern category dropdown trigger & choices (.custom-select-trigger, .custom-select-option, #concern-type)
  * 6. Minecraft Click Sound (minecraft_click.mp3):
  *    - Click any other buttons/controls (copy ID, clear search, reset filters)
  * ============================================================================
@@ -277,20 +274,6 @@ class SoundService {
         const target = e.target;
         if (!(target instanceof Element)) return;
 
-        // A. Dropdown choices: Typewriter sound on hover for each choice
-        const dropdownOption = target.closest('.custom-select-option');
-        if (dropdownOption) {
-          const fromEl = e.relatedTarget;
-          if (fromEl instanceof Node && dropdownOption.contains(fromEl)) return;
-          const now = performance.now();
-          if (now - this.lastHoverTime >= 40) {
-            this.lastHoverTime = now;
-            this.playTypewriter();
-          }
-          return;
-        }
-
-        // B. Box / Container / Nav Button Hover
         const box = target.closest(hoverTypewriterSelector);
         if (!box) return;
 
@@ -348,15 +331,11 @@ class SoundService {
         // 1. Nav filter buttons: All, Pending, In Progress, Resolved (#filter-container button)
         // 2. Card action buttons: Start in progress, Mark as resolved, Re-open (Pending) (.btn-status-action)
         // 3. Theme option buttons (.theme-opt)
-        // 4. Textfields on click: input[type="text"], input[type="search"], textarea, etc.
-        // 5. Concern Category dropdown trigger & choices (.custom-select-trigger, .custom-select-option, #concern-type)
         const isNavFilterBtn = target.closest('#filter-container button, .filter-bar-row button');
         const isStatusActionBtn = target.closest('.btn-status-action');
         const isThemeOptBtn = target.closest('.theme-opt');
-        const isTextField = target.closest('input[type="text"], input[type="search"], input:not([type]), textarea, #student-name, #concern-description, #search-input');
-        const isDropdown = target.closest('#concern-type, .select-wrapper, .custom-select-trigger, .custom-select-option');
 
-        if (isNavFilterBtn || isStatusActionBtn || isThemeOptBtn || isTextField || isDropdown) {
+        if (isNavFilterBtn || isStatusActionBtn || isThemeOptBtn) {
           this.playClickPen();
           return;
         }

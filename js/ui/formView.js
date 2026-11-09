@@ -65,7 +65,6 @@ export class FormView {
 
     // 1. Populate category select from constants (ensures single source of truth)
     this._populateCategories();
-    this._setupCustomSelect();
 
     // 2. Live character count & validation styling
     if (this.descInput && this.charCounter) {
@@ -89,171 +88,6 @@ export class FormView {
     // 5. Sample Ticket Auto-fill
     if (this.sampleFillBtn) {
       this.sampleFillBtn.addEventListener('click', () => this._fillSampleTicket());
-    }
-  }
-
-  /**
-   * Sets up sleek Bryl Lim custom select dropdown, enabling choice hover sounds and click pen feedback.
-   * Keeps underlying native select perfectly synced for DOM contracts and validation.
-   * @private
-   */
-  _setupCustomSelect() {
-    if (!this.typeSelect) return;
-    const wrapper = this.typeSelect.closest('.select-wrapper');
-    if (!wrapper) return;
-
-    wrapper.classList.add('custom-enabled');
-
-    let trigger = wrapper.querySelector('.custom-select-trigger');
-    let menu = wrapper.querySelector('.custom-select-menu');
-
-    if (!trigger) {
-      trigger = document.createElement('div');
-      trigger.className = 'custom-select-trigger';
-      trigger.setAttribute('tabindex', '0');
-      trigger.setAttribute('role', 'combobox');
-      trigger.setAttribute('aria-haspopup', 'listbox');
-      trigger.setAttribute('aria-expanded', 'false');
-
-      const valSpan = document.createElement('span');
-      valSpan.className = 'custom-select-value is-placeholder';
-      valSpan.textContent = 'Select category...';
-      trigger.appendChild(valSpan);
-
-      const caret = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      caret.setAttribute('class', 'select-chevron');
-      caret.setAttribute('viewBox', '0 0 20 20');
-      caret.setAttribute('fill', 'currentColor');
-      caret.setAttribute('aria-hidden', 'true');
-      caret.innerHTML = '<path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />';
-      trigger.appendChild(caret);
-
-      wrapper.appendChild(trigger);
-    }
-
-    if (!menu) {
-      menu = document.createElement('div');
-      menu.className = 'custom-select-menu';
-      menu.setAttribute('role', 'listbox');
-      menu.hidden = true;
-      wrapper.appendChild(menu);
-    }
-
-    // Populate dropdown options
-    menu.innerHTML = '';
-    CONCERN_TYPES.forEach((type) => {
-      const opt = document.createElement('div');
-      opt.className = 'custom-select-option';
-      opt.setAttribute('role', 'option');
-      opt.setAttribute('data-value', type);
-      opt.setAttribute('tabindex', '-1');
-
-      const label = document.createElement('span');
-      label.textContent = type;
-      opt.appendChild(label);
-
-      const check = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-      check.setAttribute('class', 'custom-select-option-check');
-      check.setAttribute('viewBox', '0 0 20 20');
-      check.setAttribute('fill', 'currentColor');
-      check.innerHTML = '<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />';
-      opt.appendChild(check);
-
-      opt.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this._selectCategory(type);
-      });
-
-      menu.appendChild(opt);
-    });
-
-    trigger.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (wrapper.classList.contains('is-open')) {
-        this._closeCustomSelect();
-      } else {
-        this._openCustomSelect();
-      }
-    });
-
-    trigger.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
-        e.preventDefault();
-        this._openCustomSelect();
-      } else if (e.key === 'Escape') {
-        this._closeCustomSelect();
-      }
-    });
-
-    document.addEventListener('click', (e) => {
-      if (!wrapper.contains(e.target)) {
-        this._closeCustomSelect();
-      }
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && wrapper.classList.contains('is-open')) {
-        this._closeCustomSelect();
-      }
-    });
-
-    this.typeSelect.addEventListener('change', () => {
-      this._syncCustomSelect();
-    });
-
-    this.customTrigger = trigger;
-    this.customMenu = menu;
-    this.customWrapper = wrapper;
-
-    this._syncCustomSelect();
-  }
-
-  _openCustomSelect() {
-    if (!this.customWrapper || !this.customMenu || !this.customTrigger) return;
-    this.customWrapper.classList.add('is-open');
-    this.customMenu.hidden = false;
-    this.customTrigger.setAttribute('aria-expanded', 'true');
-  }
-
-  _closeCustomSelect() {
-    if (!this.customWrapper || !this.customMenu || !this.customTrigger) return;
-    this.customWrapper.classList.remove('is-open');
-    this.customMenu.hidden = true;
-    this.customTrigger.setAttribute('aria-expanded', 'false');
-  }
-
-  _selectCategory(value) {
-    if (!this.typeSelect) return;
-    this.typeSelect.value = value;
-    this.typeSelect.dispatchEvent(new Event('change', { bubbles: true }));
-    this._closeCustomSelect();
-    this._clearFieldError(this.typeSelect, this.typeError);
-    if (this.customTrigger) {
-      this.customTrigger.focus();
-    }
-  }
-
-  _syncCustomSelect() {
-    if (!this.customTrigger || !this.typeSelect) return;
-    const val = this.typeSelect.value;
-    const valSpan = this.customTrigger.querySelector('.custom-select-value');
-    if (valSpan) {
-      if (val) {
-        valSpan.textContent = val;
-        valSpan.classList.remove('is-placeholder');
-      } else {
-        valSpan.textContent = 'Select category...';
-        valSpan.classList.add('is-placeholder');
-      }
-    }
-
-    if (this.customMenu) {
-      const options = this.customMenu.querySelectorAll('.custom-select-option');
-      options.forEach((opt) => {
-        const isMatch = opt.getAttribute('data-value') === val;
-        opt.classList.toggle('is-selected', isMatch);
-        opt.setAttribute('aria-selected', String(isMatch));
-      });
     }
   }
 
@@ -305,7 +139,6 @@ export class FormView {
     this.descInput.value = sample.desc;
 
     this._clearAllErrors();
-    this._syncCustomSelect();
     this._handleDescriptionInput();
     notificationService.info(`Loaded sample ticket: ${sample.type}`, 2000);
   }
@@ -316,9 +149,6 @@ export class FormView {
    */
   _clearFieldError(inputElement, errorElement) {
     if (inputElement) inputElement.classList.remove('input-invalid');
-    if (inputElement === this.typeSelect && this.customTrigger) {
-      this.customTrigger.classList.remove('input-invalid');
-    }
     if (errorElement) errorElement.classList.remove('visible');
   }
 
@@ -344,9 +174,6 @@ export class FormView {
     }
     if (errors.concernType && this.typeSelect && this.typeError) {
       this.typeSelect.classList.add('input-invalid');
-      if (this.customTrigger) {
-        this.customTrigger.classList.add('input-invalid');
-      }
       this.typeError.textContent = errors.concernType;
       this.typeError.classList.add('visible');
     }
@@ -430,7 +257,6 @@ export class FormView {
   reset() {
     if (this.form) this.form.reset();
     this._clearAllErrors();
-    this._syncCustomSelect();
     if (this.charCounter) {
       this.charCounter.textContent = `0 / ${VALIDATION_RULES.DESCRIPTION.MIN_LENGTH} min chars`;
       this.charCounter.classList.remove('valid');
