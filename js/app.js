@@ -265,6 +265,15 @@ class App {
    */
   _registerServiceWorker() {
     if ('serviceWorker' in navigator) {
+      const hadController = Boolean(navigator.serviceWorker.controller);
+      let isRefreshing = false;
+
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!hadController || isRefreshing) return;
+        isRefreshing = true;
+        window.location.reload();
+      });
+
       window.addEventListener('load', () => {
         navigator.serviceWorker
           .register('./service-worker.js')

@@ -5,7 +5,7 @@
  * cache version management, and network fallback.
  */
 
-const CACHE_NAME = 'ctu-smartdesk-v27';
+const CACHE_NAME = 'ctu-smartdesk-v34';
 
 // Pre-cached core assets for 100% offline functionality
 const PRECACHE_ASSETS = [
@@ -47,7 +47,10 @@ self.addEventListener('install', (event) => {
     caches
       .open(CACHE_NAME)
       .then((cache) => {
-        return cache.addAll(PRECACHE_ASSETS);
+        const freshRequests = PRECACHE_ASSETS.map(
+          (assetUrl) => new Request(assetUrl, { cache: 'reload' })
+        );
+        return cache.addAll(freshRequests);
       })
       .then(() => {
         console.log('[Service Worker] All core assets cached successfully.');
@@ -93,6 +96,40 @@ self.addEventListener('fetch', (event) => {
 
   // Ignore chrome-extension or external analytics if any
   if (!url.protocol.startsWith('http')) return;
+
+  const isSameOrigin = url.origin === self.location.origin;
+  const isShellCodeAsset =
+    isSameOrigin &&
+    (event.request.mode === 'navigate' ||
+      event.request.destination === 'document' ||
+      event.request.destination === 'style' ||
+      event.request.destination === 'script' ||
+      /\.(html|css|js)$/i.test(url.pathname));
+
+  // Network-First for HTML/CSS/JS shell files so layout updates take effect on normal refresh
+  if (isShellCodeAsset) {
+    event.respondWith(
+      fetch(new Request(event.request, { cache: 'no-cache' }))
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          return caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {
+            if (cachedResponse) return cachedResponse;
+            if (event.request.headers.get('accept')?.includes('text/html')) {
+              return caches.match('./index.html');
+            }
+          });
+        })
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then((cachedResponse) => {

@@ -27,9 +27,14 @@
 <body>
 
   <!-- ========================================================================
-       PAGE-WIDE HALFTONE BACKDROP (bryllim.com signature element)
+       PAGE-WIDE HALFTONE + STITCH FLARE BACKDROP
        ======================================================================== -->
   <div aria-hidden="true" class="backdrop-halftone-container">
+    <div class="stitch-flare-layer">
+      <div class="stitch-flare stitch-flare-left"></div>
+      <div class="stitch-flare stitch-flare-right"></div>
+      <div class="stitch-flare stitch-flare-ambient"></div>
+    </div>
     <canvas id="halftone-canvas" class="halftone-canvas"></canvas>
     <div class="halftone halftone-wide mask-tr"></div>
     <div class="halftone mask-bl"></div>
@@ -40,13 +45,12 @@
        ======================================================================== -->
   <header id="app-header">
     <div class="header-inner">
-      <!-- Left: Brand Title in Geist Pixel & Subtitle -->
+      <!-- Left: Brand Title in Geist Pixel -->
       <div class="brand-group">
         <div class="brand-titles">
           <div class="brand-title-row">
             <h1 class="brand-title">CTU SmartDesk</h1>
           </div>
-          <span class="brand-subtitle">Cebu Technological University · Campus Service Requests</span>
         </div>
       </div>
 

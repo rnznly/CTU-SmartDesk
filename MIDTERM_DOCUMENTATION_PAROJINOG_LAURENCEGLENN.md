@@ -5,7 +5,7 @@
 
 ---
 
-### 📋 Candidate & Examination Metadata
+### Candidate & Examination Metadata
 * **Student Name:** Laurence Glenn Parojinog
 * **Course & Section:** CC316 – Applications Development and Emerging Technologies
 * **Academic Term:** First Semester, A.Y. 2026–2027
@@ -17,7 +17,7 @@
 
 ---
 
-## 📌 1. Executive Summary & Project Objectives
+## 1. Executive Summary & Project Objectives
 
 The **CTU SmartDesk** is an enterprise-grade Progressive Web Application developed to modernize campus facility maintenance, classroom equipment repairs, and laboratory IT support reporting across Cebu Technological University.
 
@@ -31,7 +31,7 @@ Historically, university equipment issues (defective classroom projectors, malfu
 
 ---
 
-## 🏛️ 2. System Architecture & Loose Coupling (Part II - 20 Points)
+## 2. System Architecture & Loose Coupling (Part II - 20 Points)
 
 CTU SmartDesk implements a strict **Three-Tier Architecture** adhering to the principles of **High Cohesion** and **Loose Coupling**. No component bypasses adjacent layers.
 
@@ -61,7 +61,7 @@ CTU SmartDesk implements a strict **Three-Tier Architecture** adhering to the pr
 
 ---
 
-## 📜 3. Data Contracts & Unified API Specifications
+## 3. Data Contracts & Unified API Specifications
 
 Communication between layers strictly follows standardized TypeScript-equivalent JSON contracts:
 
@@ -134,7 +134,7 @@ The ID generation engine combines:
 
 ---
 
-## 🧪 6. Usability Testing Protocol & Task Record (Part IV - 15 Points)
+## 6. Usability Testing Protocol & Task Record (Part IV - 15 Points)
 
 ### 6.1 Testing Methodology & Participant Profile:
 * **Participant:** Independent Student Evaluator (CTU College of Computer, Information and Communications Technology).
@@ -162,7 +162,7 @@ The ID generation engine combines:
 
 ---
 
-## 🧠 7. Higher-Order Thinking Skills (HOTS) Evaluation (Part IV)
+## 7. Higher-Order Thinking Skills (HOTS) Evaluation (Part IV)
 
 ### Prompt Question:
 > *"A participant successfully completes all three tasks but experiences difficulty locating important buttons and navigating the interface. Explain why successful task completion does not automatically mean that the application is highly usable. Your explanation must consider usability indicators such as efficiency, errors, learnability, and user satisfaction."*
@@ -203,7 +203,7 @@ Task completion—technically termed **task effectiveness**—is only one single
 
 ---
 
-## 🏆 8. Automated Verification & Exam Rubric Compliance Matrix
+## 8. Automated Verification & Exam Rubric Compliance Matrix
 
 ### 8.1 Automated Test Suites Summary:
 * **Presentation & PWA Audit (`scripts/test_presentation.js`):** `66 / 66 Passed (100%)`
@@ -223,14 +223,14 @@ Task completion—technically termed **task effectiveness**—is only one single
 
 ---
 
-## 🚀 9. Operational Backend Roadmap & Candidate Declaration
+## 9. Operational Backend Roadmap & Candidate Declaration
 
 ### Production Backend Migration:
 Because the system was engineered Contract-First, transitioning to a live production backend (Node.js/Express, FastAPI, or Go with PostgreSQL) requires **zero refactoring of UI view controllers or business services**. Only `mockApi.js` will be replaced with real HTTP `fetch()` requests matching the established contracts.
 
 ### Candidate Sign-off:
 * **Student Name:** Laurence Glenn Parojinog
-* **Signature:** *L. G. Parojinog*
+* **Signature:** *Reenznly*
 * **Date:** November 09, 2026
 * **Course:** CC316 – Applications Development and Emerging Technologies
 * **Status:** Final Midterm Practical Examination Submission

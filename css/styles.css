@@ -57,7 +57,24 @@
   --radius-sm:              4px;
   --radius-md:              8px;
   --radius-lg:              10px;
+  --radius-glass:           18px;
+  --radius-glass-card:      16px;
   --radius-full:            9999px;
+
+  /* Frosted Glass Surface Tokens (Light Frosted Acrylic Glass) */
+  --glass-bg:               linear-gradient(145deg, rgba(255, 255, 255, 0.56) 0%, rgba(241, 245, 255, 0.34) 52%, rgba(246, 244, 255, 0.44) 100%);
+  --glass-menu-bg:          rgba(252, 253, 255, 0.76);
+  --glass-border:           rgba(15, 23, 42, 0.11);
+  --glass-border-hover:     rgba(15, 23, 42, 0.20);
+  --glass-divider:          rgba(15, 23, 42, 0.09);
+  --glass-field-bg:         rgba(15, 23, 42, 0.032);
+  --glass-field-focus:      rgba(255, 255, 255, 0.88);
+  --glass-field-border:     rgba(15, 23, 42, 0.10);
+  --glass-chip-bg:          rgba(255, 255, 255, 0.48);
+  --glass-hover-bg:         rgba(15, 23, 42, 0.06);
+  --glass-blur:             blur(24px) saturate(180%);
+  --glass-shadow:           inset 0 1px 0 rgba(255, 255, 255, 0.96), inset 0 -1px 0 rgba(15, 23, 42, 0.04), 0 12px 34px -10px rgba(30, 41, 59, 0.11), 0 2px 8px -2px rgba(79, 70, 229, 0.07);
+  --glass-shadow-hover:     inset 0 1px 0 rgba(255, 255, 255, 1), inset 0 -1px 0 rgba(15, 23, 42, 0.06), 0 18px 42px -10px rgba(30, 41, 59, 0.16), 0 4px 14px -2px rgba(79, 70, 229, 0.11);
 
   --font-sans:              'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono:              'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -94,6 +111,21 @@ html.dark {
   --dot-pending:            #F59E0B;
   --dot-progress:           #818CF8;
   --dot-resolved:           #22C55E;
+
+  /* Frosted Glass Surface Tokens (Stitch Smoked Obsidian Glass) */
+  --glass-bg:               linear-gradient(145deg, rgba(24, 26, 38, 0.62) 0%, rgba(12, 13, 21, 0.50) 100%);
+  --glass-menu-bg:          rgba(18, 20, 30, 0.84);
+  --glass-border:           rgba(255, 255, 255, 0.12);
+  --glass-border-hover:     rgba(255, 255, 255, 0.22);
+  --glass-divider:          rgba(255, 255, 255, 0.09);
+  --glass-field-bg:         rgba(255, 255, 255, 0.045);
+  --glass-field-focus:      rgba(16, 18, 28, 0.78);
+  --glass-field-border:     rgba(255, 255, 255, 0.11);
+  --glass-chip-bg:          rgba(255, 255, 255, 0.055);
+  --glass-hover-bg:         rgba(255, 255, 255, 0.08);
+  --glass-blur:             blur(24px) saturate(150%);
+  --glass-shadow:           inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 0 24px rgba(255, 255, 255, 0.02), 0 14px 36px -12px rgba(0, 0, 0, 0.55);
+  --glass-shadow-hover:     inset 0 1px 0 rgba(255, 255, 255, 0.18), inset 0 0 28px rgba(255, 255, 255, 0.03), 0 18px 42px -12px rgba(0, 0, 0, 0.65);
 
   color-scheme: dark;
 }
@@ -139,7 +171,7 @@ body {
 }
 
 /* --------------------------------------------------------------------------
-   3. Halftone Dot Field Backdrop (bryllim.com Signature Feature)
+   3. Halftone Dot Field & Stitch Gradient Flare Backdrop
    -------------------------------------------------------------------------- */
 .backdrop-halftone-container {
   pointer-events: none;
@@ -147,6 +179,215 @@ body {
   inset: 0;
   z-index: 0;
   overflow: hidden;
+}
+
+/* Animated diagonal gradient flare beams rendered beneath the dot matrix */
+.stitch-flare-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.stitch-flare {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  will-change: transform, opacity;
+  transform-origin: center center;
+}
+
+/* Light mode: vibrant periwinkle-indigo washes visible beneath frosted acrylic glass */
+.stitch-flare-left {
+  left: -18vw;
+  bottom: -14vh;
+  width: 78vw;
+  height: 52vh;
+  filter: blur(58px);
+  opacity: 0.95;
+  background:
+    linear-gradient(
+      118deg,
+      rgba(139, 92, 246, 0) 8%,
+      rgba(139, 92, 246, 0.28) 28%,
+      rgba(59, 130, 246, 0.36) 48%,
+      rgba(99, 102, 241, 0.26) 68%,
+      rgba(139, 92, 246, 0) 92%
+    ),
+    radial-gradient(
+      ellipse 70% 55% at 45% 52%,
+      rgba(96, 165, 250, 0.34) 0%,
+      rgba(167, 139, 250, 0.24) 52%,
+      transparent 80%
+    );
+  animation: stitchFlareDriftLeft 18s ease-in-out infinite alternate;
+}
+
+.stitch-flare-right {
+  right: -16vw;
+  top: 24vh;
+  width: 68vw;
+  height: 48vh;
+  filter: blur(60px);
+  opacity: 0.92;
+  background:
+    linear-gradient(
+      242deg,
+      rgba(167, 139, 250, 0) 8%,
+      rgba(99, 102, 241, 0.26) 30%,
+      rgba(59, 130, 246, 0.34) 50%,
+      rgba(192, 132, 252, 0.26) 70%,
+      rgba(139, 92, 246, 0) 92%
+    ),
+    radial-gradient(
+      ellipse 68% 52% at 55% 48%,
+      rgba(96, 165, 250, 0.32) 0%,
+      rgba(139, 92, 246, 0.22) 55%,
+      transparent 82%
+    );
+  animation: stitchFlareDriftRight 22s ease-in-out -4s infinite alternate;
+}
+
+.stitch-flare-ambient {
+  left: 16vw;
+  bottom: -22vh;
+  width: 68vw;
+  height: 46vh;
+  filter: blur(74px);
+  opacity: 0.85;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 60%,
+    rgba(99, 102, 241, 0.22) 0%,
+    rgba(59, 130, 246, 0.18) 46%,
+    transparent 80%
+  );
+  animation: stitchFlarePulse 14s ease-in-out infinite alternate;
+}
+
+/* Dark mode: luminous Stitch-inspired electric blue/violet obsidian beams */
+html.dark .stitch-flare-left {
+  background:
+    linear-gradient(
+      118deg,
+      rgba(124, 58, 237, 0) 8%,
+      rgba(139, 92, 246, 0.44) 28%,
+      rgba(59, 130, 246, 0.62) 48%,
+      rgba(168, 85, 247, 0.42) 68%,
+      rgba(124, 58, 237, 0) 92%
+    ),
+    radial-gradient(
+      ellipse 70% 55% at 45% 52%,
+      rgba(96, 165, 250, 0.54) 0%,
+      rgba(99, 102, 241, 0.36) 52%,
+      transparent 80%
+    );
+}
+
+html.dark .stitch-flare-right {
+  background:
+    linear-gradient(
+      242deg,
+      rgba(139, 92, 246, 0) 8%,
+      rgba(167, 139, 250, 0.38) 28%,
+      rgba(96, 165, 250, 0.58) 50%,
+      rgba(139, 92, 246, 0.44) 70%,
+      rgba(99, 102, 241, 0) 92%
+    ),
+    radial-gradient(
+      ellipse 68% 52% at 55% 48%,
+      rgba(56, 189, 248, 0.36) 0%,
+      rgba(124, 58, 237, 0.34) 55%,
+      transparent 82%
+    );
+}
+
+html.dark .stitch-flare-ambient {
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 60%,
+    rgba(59, 130, 246, 0.24) 0%,
+    rgba(139, 92, 246, 0.20) 48%,
+    transparent 82%
+  );
+}
+
+@keyframes stitchFlareDriftLeft {
+  0% {
+    transform: translate3d(-2%, 2%, 0) rotate(33deg) scale(0.98, 0.94);
+    opacity: 0.78;
+  }
+  50% {
+    transform: translate3d(3%, -2%, 0) rotate(36deg) scale(1.05, 1.04);
+    opacity: 0.96;
+  }
+  100% {
+    transform: translate3d(6%, 1%, 0) rotate(31deg) scale(1.02, 1.08);
+    opacity: 0.86;
+  }
+}
+
+@keyframes stitchFlareDriftRight {
+  0% {
+    transform: translate3d(2%, 3%, 0) rotate(-32deg) scale(0.96, 0.96);
+    opacity: 0.74;
+  }
+  50% {
+    transform: translate3d(-4%, -2%, 0) rotate(-28deg) scale(1.06, 1.05);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(1%, -4%, 0) rotate(-34deg) scale(1.01, 1.02);
+    opacity: 0.82;
+  }
+}
+
+@keyframes stitchFlarePulse {
+  0% {
+    transform: translate3d(-2%, 0, 0) scale(0.95);
+    opacity: 0.65;
+  }
+  100% {
+    transform: translate3d(3%, -3%, 0) scale(1.08);
+    opacity: 0.92;
+  }
+}
+
+@media (max-width: 767px) {
+  .stitch-flare-left {
+    left: -26vw;
+    width: 96vw;
+    height: 44vh;
+    filter: blur(46px);
+  }
+  .stitch-flare-right {
+    right: -26vw;
+    top: 22vh;
+    width: 90vw;
+    height: 40vh;
+    filter: blur(48px);
+  }
+  .stitch-flare-ambient {
+    left: 4vw;
+    width: 92vw;
+    filter: blur(56px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stitch-flare {
+    animation: none;
+  }
+  .stitch-flare-left {
+    transform: rotate(34deg);
+    opacity: 0.88;
+  }
+  .stitch-flare-right {
+    transform: rotate(-30deg);
+    opacity: 0.86;
+  }
+  .stitch-flare-ambient {
+    opacity: 0.75;
+  }
 }
 
 .halftone-canvas {
@@ -226,7 +467,7 @@ body {
 .brand-titles {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  justify-content: center;
 }
 
 .brand-title-row {
@@ -242,14 +483,6 @@ body {
   color: rgb(var(--ink));
   letter-spacing: -0.01em;
   line-height: 1;
-}
-
-.brand-subtitle {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  color: rgb(var(--g500));
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
 }
 
 /* System Controls (Perfect 30px height alignment) */
@@ -516,20 +749,18 @@ html.dark .outage-toggle-wrapper.active input[type="checkbox"] {
   position: relative;
   z-index: 1;
   flex: 1;
-  max-width: 1400px;
   width: 100%;
-  margin: 0 auto;
-  padding: 1.5rem 1.5rem 3rem 1.5rem;
+  padding: 1.25rem clamp(1rem, 1.4vw, 1.5rem) 2.5rem clamp(1rem, 1.4vw, 1.5rem);
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.75rem;
+  gap: 1.5rem;
   align-items: start;
 }
 
 @media (min-width: 1024px) {
   .main-workspace {
-    grid-template-columns: 420px 1fr;
-    gap: 2rem;
+    grid-template-columns: clamp(380px, 25vw, 460px) 1fr;
+    gap: clamp(1.25rem, 1.5vw, 1.75rem);
   }
 }
 
