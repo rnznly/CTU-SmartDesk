@@ -612,7 +612,7 @@ Only tokens change between themes. Component CSS stays the same, which is why ev
 - Change the halftone colors in §8.3 and the `.stitch-flare` gradients in §8.5 to shift the ambient backdrop mood.
 
 > [!WARNING]
-> **License terms.** This design system, its tokens, and its patterns may be studied, referenced, and adapted under the project's [MIT License with Design & Brand Reservation](../LICENSE). You **may not** use Cebu Technological University's name, seal, or logos, or present a copy of CTU SmartDesk's exact look as your own work. Use your own branding and keep attribution.
+> **License terms.** This design system, its tokens, and its patterns may be studied, referenced, and adapted under the project's [MIT License](../LICENSE). Under the license's Supplemental Trademark & Branding Notice, you **may not** use Cebu Technological University's name, seal, or logos, or misrepresent authorship on public forks or deployments. Use your own branding and keep attribution.
 
 ---
 
